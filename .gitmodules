@@ -1,0 +1,3 @@
+[submodule "danssfml"]
+	path = danssfml
+	url = https://github.com/dansgithubuser/danssfml
