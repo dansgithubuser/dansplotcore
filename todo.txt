@@ -1,0 +1,9 @@
+plot interaction
+	resize screen
+	zoom
+		horizontal
+		vertical
+		both
+	scroll
+axes
+save to file (arbitrary resolution)
