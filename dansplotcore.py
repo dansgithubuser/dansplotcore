@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import time
 
@@ -18,12 +19,21 @@ class Plot:
 	def show(self):
 		self._construct()
 		media.init(title=self.title)
+		media.custom_resize(True)
 		done=False
 		while not done:
 			while True:
 				event=media.poll_event()
 				if not event: break
-				if event=='q': done=True
+				#quit
+				if event=='q': done=True; break
+				#resize
+				m=re.match(r'rw(\d+)h(\d+)', event)
+				if m:
+					w, h=(int(i) for i in m.groups())
+					media.set_view(0, 0, w, h)
+					break
+			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()
 			media.display()
 			time.sleep(0.01)

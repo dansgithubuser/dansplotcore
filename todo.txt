@@ -1,5 +1,4 @@
 plot interaction
-	resize screen
 	zoom
 		horizontal
 		vertical
