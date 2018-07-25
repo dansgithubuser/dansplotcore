@@ -23,6 +23,9 @@ class Plot:
 		done=False
 		dragging=False
 		view=[0, 0, 0, 0]
+		def move(view, dx, dy):
+			view[0]-=dx; view[1]-=dy
+			media.set_view(*view)
 		while not done:
 			while True:
 				event=media.poll_event()
@@ -49,10 +52,19 @@ class Plot:
 					(xf, yf)=(int(i) for i in m.groups())
 					(xi, yi)=drag_prev
 					(dx, dy)=(xf-xi, yf-yi)
-					view[0]-=dx; view[1]-=dy
-					media.set_view(*view)
+					move(view, dx, dy)
 					drag_prev=(xf, yf)
 					break
+				#keyboard
+				m=re.match('<(.+)', event)
+				if m:
+					key=m.group(1)
+					move(view, *{
+						'Left' : ( 10,   0),
+						'Right': (-10,   0),
+						'Up'   : (  0,  10),
+						'Down' : (  0, -10),
+					}.get(key, (0, 0)))
 			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()
 			media.display()
