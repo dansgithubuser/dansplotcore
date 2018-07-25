@@ -21,6 +21,8 @@ class Plot:
 		media.init(title=self.title)
 		media.custom_resize(True)
 		done=False
+		dragging=False
+		view=[0, 0, 0, 0]
 		while not done:
 			while True:
 				event=media.poll_event()
@@ -31,7 +33,25 @@ class Plot:
 				m=re.match(r'rw(\d+)h(\d+)', event)
 				if m:
 					w, h=(int(i) for i in m.groups())
-					media.set_view(0, 0, w, h)
+					view[2]=w; view[3]=h
+					media.set_view(*view)
+					break
+				#left mouse button
+				if event[0]=='b':
+					dragging={'<': True, '>': False}[event[1]]
+					if dragging:
+						m=re.match(r'b<0x(\d+)y(\d+)', event)
+						drag_prev=(int(i) for i in m.groups())
+					break
+				#mouse move
+				if dragging:
+					m=re.match(r'x(\d+)y(\d+)', event)
+					(xf, yf)=(int(i) for i in m.groups())
+					(xi, yi)=drag_prev
+					(dx, dy)=(xf-xi, yf-yi)
+					view[0]-=dx; view[1]-=dy
+					media.set_view(*view)
+					drag_prev=(xf, yf)
 					break
 			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()

@@ -3,6 +3,5 @@ plot interaction
 		horizontal
 		vertical
 		both
-	scroll
 axes
 save to file (arbitrary resolution)
