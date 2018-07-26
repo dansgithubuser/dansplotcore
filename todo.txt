@@ -1,7 +1,2 @@
-plot interaction
-	zoom
-		horizontal
-		vertical
-		both
 axes
 save to file (arbitrary resolution)

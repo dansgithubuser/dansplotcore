@@ -22,9 +22,12 @@ class Plot:
 		media.custom_resize(True)
 		done=False
 		dragging=False
-		view=[0, 0, 0, 0]
+		mouse=[0, 0]
+		view=None
+		screen=None
 		def move(view, dx, dy):
-			view[0]-=dx; view[1]-=dy
+			view[0]-=dx*view[2]/media.width()
+			view[1]-=dy*view[3]/media.height()
 			media.set_view(*view)
 		def zoom(view, zx, zy, x, y):
 			#change view st (x, y) stays put and (w, h) multiplies by (zx, zy)
@@ -45,8 +48,12 @@ class Plot:
 				m=re.match(r'rw(\d+)h(\d+)', event)
 				if m:
 					w, h=(int(i) for i in m.groups())
-					view[2]=w; view[3]=h
-					media.set_view(*view)
+					if not view:
+						view=[0, 0, w, h]
+						media.set_view(*view)
+					else:
+						zoom(view, 1.0*w/screen[0], 1.0*h/screen[1], w/2, h/2)
+					screen=[w, h]
 					break
 				#left mouse button
 				if event[0]=='b':
@@ -56,14 +63,20 @@ class Plot:
 						drag_prev=(int(i) for i in m.groups())
 					break
 				#mouse move
-				if dragging:
-					m=re.match(r'x(\d+)y(\d+)', event)
-					(xf, yf)=(int(i) for i in m.groups())
-					(xi, yi)=drag_prev
-					(dx, dy)=(xf-xi, yf-yi)
-					move(view, dx, dy)
-					drag_prev=(xf, yf)
+				m=re.match(r'x(\d+)y(\d+)', event)
+				if m:
+					mouse=[int(i) for i in m.groups()]
+					if dragging:
+						xi, yi=drag_prev
+						dx, dy=mouse[0]-xi, mouse[1]-yi
+						move(view, dx, dy)
+						drag_prev=mouse
 					break
+				#mouse wheel
+				if event.startswith('w'):
+					delta=int(event[1:])
+					z=1.25 if delta>0 else 0.8
+					zoom(view, z, z, mouse[0], mouse[1])
 				#keyboard
 				m=re.match('<(.+)', event)
 				if m:
