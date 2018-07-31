@@ -14,7 +14,7 @@ class Plot:
 		self.points=[]
 
 	def point(self, x, y, r, g, b, a):
-		self.points.append((x, y, r, g, b, a))
+		self.points.append([x, y, r, g, b, a])
 
 	def show(self):
 		self._construct()
@@ -39,6 +39,7 @@ class Plot:
 			view[3]=new_view_h
 			media.set_view(*view)
 		while not done:
+			#handle events
 			while True:
 				event=media.poll_event()
 				if not event: break
@@ -99,12 +100,29 @@ class Plot:
 					if key in zooms:
 						zoom(view, *zooms[key], media.width()/2, media.height()/2)
 						break
+			#draw
 			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()
+			##x axis
+			i=view[0]+view[2]/8
+			while i<view[0]+15*view[2]/16:
+				s='{}'.format(i)
+				media.text(s, x=i+2, y=view[1]+view[3]-10, h=8)
+				media.line(xi=i, xf=i, y=view[1]+view[3], h=-12)
+				i+=view[2]/8
+			##y axis
+			i=view[1]+view[3]/8
+			while i<view[1]+15*view[3]/16:
+				s='{}'.format(-i)
+				media.text(s, x=view[0], y=i+2, h=8)
+				media.line(x=view[0], w=12, yi=i, yf=i)
+				i+=view[2]/8
+			##display
 			media.display()
 			time.sleep(0.01)
 
 	def _construct(self):
 		self.vertex_buffer=media.VertexBuffer(len(self.points))
 		for i, point in enumerate(self.points):
+			point[1]=-point[1]
 			self.vertex_buffer.update(i, *point)
