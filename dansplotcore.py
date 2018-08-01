@@ -100,6 +100,7 @@ class Plot:
 					if key in zooms:
 						zoom(view, *zooms[key], media.width()/2, media.height()/2)
 						break
+					if key=='Return': media.capture_start()
 			#draw
 			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()
@@ -119,6 +120,7 @@ class Plot:
 				i+=view[2]/8
 			##display
 			media.display()
+			media.capture_finish('plot.png')
 			time.sleep(0.01)
 
 	def _construct(self):
