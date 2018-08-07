@@ -26,7 +26,7 @@ class Plot:
 		done=False
 		dragging=False
 		mouse=[0, 0]
-		view=None
+		view=list(media.get_view())
 		screen=None
 		def move(view, dx, dy):
 			view[0]-=dx*view[2]/media.width()
