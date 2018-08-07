@@ -6,7 +6,10 @@ import time
 LOC=os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(LOC, 'danssfml', 'wrapper'))
 
-import media
+try:
+	import media
+except:
+	from danssfmlpy import media
 
 class Plot:
 	def __init__(self, title):
