@@ -21,7 +21,7 @@ class Plot:
 
 	def show(self):
 		self._construct()
-		media.init(title=self.title)
+		media.init(640, 480, title=self.title)
 		media.custom_resize(True)
 		done=False
 		dragging=False
@@ -107,19 +107,21 @@ class Plot:
 			#draw
 			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()
+			margin_x=2.0/640*view[2]
+			margin_y=2.0/480*view[3]
 			##x axis
 			i=view[0]+view[2]/8
 			while i<view[0]+15*view[2]/16:
-				s='{}'.format(i)
-				media.text(s, x=i+2, y=view[1]+view[3]-10, h=8)
-				media.line(xi=i, xf=i, y=view[1]+view[3], h=-12)
+				s='{:.8}'.format(i)
+				media.vector_text(s, x=i+margin_x, y=view[1]+view[3]-margin_y, h=8/480.0*view[3])
+				media.line(xi=i, xf=i, y=view[1]+view[3], h=-12/480.0*view[2])
 				i+=view[2]/8
 			##y axis
 			i=view[1]+view[3]/8
 			while i<view[1]+15*view[3]/16:
-				s='{}'.format(-i)
-				media.text(s, x=view[0], y=i+2, h=8)
-				media.line(x=view[0], w=12, yi=i, yf=i)
+				s='{:.8}'.format(-i)
+				media.vector_text(s, x=view[0]+margin_x, y=i-margin_y, h=8/480.0*view[3])
+				media.line(x=view[0], w=12/640.0*view[2], yi=i, yf=i)
 				i+=view[2]/8
 			##display
 			media.display()
