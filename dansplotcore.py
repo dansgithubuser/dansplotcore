@@ -38,12 +38,12 @@ class Plot:
 		mouse=[0, 0]
 		view=[self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min]
 		screen=[media.width(), media.height()]
-		media.set_view(*view)
-		view=list(media.get_view())
+		media.view_set(*view)
+		view=list(media.view_get())
 		def move(view, dx, dy):
 			view[0]-=dx*view[2]/media.width()
 			view[1]-=dy*view[3]/media.height()
-			media.set_view(*view)
+			media.view_set(*view)
 		def zoom(view, zx, zy, x, y):
 			#change view st (x, y) stays put and (w, h) multiplies by (zx, zy)
 			new_view_w=view[2]*zx
@@ -52,7 +52,7 @@ class Plot:
 			view[1]+=1.0*y/media.height()*(view[3]-new_view_h)
 			view[2]=new_view_w
 			view[3]=new_view_h
-			media.set_view(*view)
+			media.view_set(*view)
 		while not done:
 			#handle events
 			while True:
