@@ -1,3 +1,4 @@
+import math
 import os
 import re
 import sys
@@ -15,19 +16,30 @@ class Plot:
 	def __init__(self, title):
 		self.title=title
 		self.points=[]
+		self.x_min= math.inf
+		self.x_max=-math.inf
+		self.y_min= math.inf
+		self.y_max=-math.inf
 
 	def point(self, x, y, r, g, b, a):
+		y=-y
 		self.points.append([x, y, r, g, b, a])
+		self.x_min=min(x, self.x_min)
+		self.x_max=max(x, self.x_max)
+		self.y_min=min(y, self.y_min)
+		self.y_max=max(y, self.y_max)
 
-	def show(self):
+	def show(self, w=640, h=480):
 		self._construct()
-		media.init(640, 480, title=self.title)
+		media.init(w, h, title=self.title)
 		media.custom_resize(True)
 		done=False
 		dragging=False
 		mouse=[0, 0]
+		view=[self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min]
+		screen=[media.width(), media.height()]
+		media.set_view(*view)
 		view=list(media.get_view())
-		screen=None
 		def move(view, dx, dy):
 			view[0]-=dx*view[2]/media.width()
 			view[1]-=dy*view[3]/media.height()
@@ -52,11 +64,7 @@ class Plot:
 				m=re.match(r'rw(\d+)h(\d+)', event)
 				if m:
 					w, h=(int(i) for i in m.groups())
-					if not view:
-						view=[0, 0, w, h]
-						media.set_view(*view)
-					else:
-						zoom(view, 1.0*w/screen[0], 1.0*h/screen[1], w/2, h/2)
+					zoom(view, 1.0*w/screen[0], 1.0*h/screen[1], w/2, h/2)
 					screen=[w, h]
 					break
 				#left mouse button
@@ -107,21 +115,21 @@ class Plot:
 			#draw
 			media.clear(color=(0, 0, 0))
 			self.vertex_buffer.draw()
-			margin_x=2.0/640*view[2]
-			margin_y=2.0/480*view[3]
+			margin_x=2.0/screen[0]*view[2]
+			margin_y=2.0/screen[1]*view[3]
 			##x axis
 			i=view[0]+view[2]/8
 			while i<view[0]+15*view[2]/16:
 				s='{:.8}'.format(i)
-				media.vector_text(s, x=i+margin_x, y=view[1]+view[3]-margin_y, h=8/480.0*view[3])
-				media.line(xi=i, xf=i, y=view[1]+view[3], h=-12/480.0*view[2])
+				media.vector_text(s, x=i+margin_x, y=view[1]+view[3]-margin_y, h=8.0/screen[1]*view[3])
+				media.line(xi=i, xf=i, y=view[1]+view[3], h=-12.0/screen[1]*view[2])
 				i+=view[2]/8
 			##y axis
 			i=view[1]+view[3]/8
 			while i<view[1]+15*view[3]/16:
 				s='{:.8}'.format(-i)
-				media.vector_text(s, x=view[0]+margin_x, y=i-margin_y, h=8/480.0*view[3])
-				media.line(x=view[0], w=12/640.0*view[2], yi=i, yf=i)
+				media.vector_text(s, x=view[0]+margin_x, y=i-margin_y, h=8.0/screen[1]*view[3])
+				media.line(x=view[0], w=12.0/screen[0]*view[2], yi=i, yf=i)
 				i+=view[2]/8
 			##display
 			media.display()
@@ -131,5 +139,4 @@ class Plot:
 	def _construct(self):
 		self.vertex_buffer=media.VertexBuffer(len(self.points))
 		for i, point in enumerate(self.points):
-			point[1]=-point[1]
 			self.vertex_buffer.update(i, *point)
