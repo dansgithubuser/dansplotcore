@@ -29,8 +29,7 @@ class Plot:
 		self.y_min=min(y, self.y_min)
 		self.y_max=max(y, self.y_max)
 
-	def show(self, w=640, h=480):
-		self._construct()
+	def show(self, w=640, h=480, pixels_per_unit=1):
 		media.init(w, h, title=self.title)
 		media.custom_resize(True)
 		done=False
@@ -53,6 +52,7 @@ class Plot:
 			view[2]=new_view_w
 			view[3]=new_view_h
 			media.view_set(*view)
+		self._construct(pixels_per_unit)
 		while not done:
 			#handle events
 			while True:
@@ -114,7 +114,7 @@ class Plot:
 					if key=='Return': media.capture_start()
 			#draw
 			media.clear(color=(0, 0, 0))
-			self.vertex_buffer.draw()
+			self.construction.draw(self.x_min, -255)
 			margin_x=2.0/screen[0]*view[2]
 			margin_y=2.0/screen[1]*view[3]
 			##x axis
@@ -136,7 +136,19 @@ class Plot:
 			media.capture_finish('plot.png')
 			time.sleep(0.01)
 
-	def _construct(self):
-		self.vertex_buffer=media.VertexBuffer(len(self.points))
+	def _construct(self, pixels_per_unit):
+		vertex_buffer=media.VertexBuffer(len(self.points))
 		for i, point in enumerate(self.points):
-			self.vertex_buffer.update(i, *point)
+			point[0]-=self.x_min
+			point[1]-=self.y_min
+			point[0]*=pixels_per_unit
+			point[1]*=pixels_per_unit
+			vertex_buffer.update(i, *point)
+		view=media.view_get()
+		self.construction=media.RenderTexture(
+			int(pixels_per_unit*view[2]),
+			int(pixels_per_unit*view[3]),
+		)
+		media.target_set(self.construction)
+		vertex_buffer.draw()
+		media.target_reset()
