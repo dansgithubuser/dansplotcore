@@ -13,4 +13,4 @@ for i in range(10000):
 	a=random.randint(0, 255)
 	plot.point(x, y, r, g, b, a)
 
-plot.show()
+plot.show(pixels_per_unit=2)

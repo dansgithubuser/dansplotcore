@@ -114,7 +114,7 @@ class Plot:
 					if key=='Return': media.capture_start()
 			#draw
 			media.clear(color=(0, 0, 0))
-			self.construction.draw(self.x_min, -255)
+			self.construction.draw(self.x_min, -255, self.x_max-self.x_min, self.y_max-self.y_min)
 			margin_x=2.0/screen[0]*view[2]
 			margin_y=2.0/screen[1]*view[3]
 			##x axis
