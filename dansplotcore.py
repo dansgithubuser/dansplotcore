@@ -134,7 +134,7 @@ class Plot:
 			##display
 			media.display()
 			media.capture_finish('plot.png')
-			time.sleep(0.01)
+			time.sleep(0.001)
 
 	def _construct(self, pixels_per_unit):
 		vertex_buffer=media.VertexBuffer(len(self.points))
