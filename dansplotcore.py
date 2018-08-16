@@ -66,14 +66,14 @@ class Plot:
 					w, h=(int(i) for i in m.groups())
 					zoom(view, 1.0*w/screen[0], 1.0*h/screen[1], w/2, h/2)
 					screen=[w, h]
-					break
+					continue
 				#left mouse button
 				if event[0]=='b':
 					dragging={'<': True, '>': False}[event[1]]
 					if dragging:
 						m=re.match(r'b<0x(\d+)y(\d+)', event)
 						drag_prev=(int(i) for i in m.groups())
-					break
+					continue
 				#mouse move
 				m=re.match(r'x(\d+)y(\d+)', event)
 				if m:
@@ -83,7 +83,7 @@ class Plot:
 						dx, dy=mouse[0]-xi, mouse[1]-yi
 						move(view, dx, dy)
 						drag_prev=mouse
-					break
+					continue
 				#mouse wheel
 				if event.startswith('w'):
 					delta=int(event[1:])
@@ -101,7 +101,7 @@ class Plot:
 					}
 					if key in moves:
 						move(view, *moves[key])
-						break
+						continue
 					zooms={
 						'a': (1.25, 1),
 						'd': (0.80, 1),
@@ -110,7 +110,7 @@ class Plot:
 					}
 					if key in zooms:
 						zoom(view, *zooms[key], media.width()/2, media.height()/2)
-						break
+						continue
 					if key=='Return': media.capture_start()
 			#draw
 			media.clear(color=(0, 0, 0))
@@ -134,7 +134,6 @@ class Plot:
 			##display
 			media.display()
 			media.capture_finish('plot.png')
-			time.sleep(0.001)
 
 	def _construct(self, pixels_per_unit):
 		vertex_buffer=media.VertexBuffer(len(self.points))
