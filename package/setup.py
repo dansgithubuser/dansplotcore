@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
 	name='dansplotcore',
-	version='1.1.0',
+	version='1.1.1',
 	description='plots powered by vertex buffer objects',
 	url='http://github.com/dansgithubuser/dansplotcore',
 	author='danspypiuser',
