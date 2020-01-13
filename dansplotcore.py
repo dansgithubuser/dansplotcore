@@ -13,7 +13,7 @@ except:
 	from danssfmlpy import media
 
 class Plot:
-	def __init__(self, title):
+	def __init__(self, title='plot'):
 		self.title=title
 		self.points=[]
 		self.x_min= math.inf
@@ -21,7 +21,7 @@ class Plot:
 		self.y_min= math.inf
 		self.y_max=-math.inf
 
-	def point(self, x, y, r, g, b, a):
+	def point(self, x, y, r=0, g=0, b=0, a=1):
 		y=-y
 		self.points.append([x, y, r, g, b, a])
 		self.x_min=min(x, self.x_min)
