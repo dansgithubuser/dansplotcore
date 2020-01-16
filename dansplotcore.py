@@ -33,6 +33,18 @@ class Plot:
         media.custom_resize(True)
         dragging = False
         mouse = [0, 0]
+        if self.x_min == self.x_max:
+            self.x_min -= 1
+            self.x_max += 1
+        if self.y_min == self.y_max:
+            self.y_min -= 1
+            self.y_max += 1
+        dx = self.x_max - self.x_min
+        dy = self.y_max - self.y_min
+        self.x_min -= dx / 16
+        self.y_min -= dy / 16
+        self.x_max += dx / 16
+        self.y_max += dy / 16
         view = [self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min]
         media.view_set(*view)
         def move(view, dx, dy):
