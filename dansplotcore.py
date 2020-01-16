@@ -150,7 +150,16 @@ class Plot:
             self.vertex_buffer.update(i, *point)
 
 def _default_transform(x, y, series=0):
-    return x, y, 255, 255, 255, 255
+    colors = [
+        (255, 255, 255),
+        (255,   0,   0),
+        (  0, 255,   0),
+        (  0,   0, 255),
+        (255, 255,   0),
+        (  0, 255, 255),
+        (255,   0, 255),
+    ]
+    return (x, y, *colors[series%len(colors)], 255)
 
 def plot_list(l, transform=_default_transform, title='plot'):
     plot = Plot(title)
