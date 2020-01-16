@@ -135,3 +135,58 @@ class Plot:
         self.vertex_buffer = media.VertexBuffer(len(self.points))
         for i, point in enumerate(self.points):
             self.vertex_buffer.update(i, *point)
+
+def _default_transform(x, y, series=0):
+    return x, y, 255, 255, 255, 255
+
+def plot_list(l, transform=_default_transform, title='plot'):
+    plot = Plot(title)
+    for i, v in enumerate(l):
+        plot.point(*transform(i, v))
+    plot.show()
+
+def plot_lists(ls, transform=_default_transform, title='plot'):
+    plot = Plot(title)
+    for j, l in enumerate(ls):
+        for i, v in enumerate(l):
+            plot.point(*transform(i, v, j))
+    plot.show()
+
+def plot_scatter(x, y, title='plot'):
+    plot = Plot(title)
+    for i in range(min(len(x), len(y))):
+        plot.point(*transform(x[i], y[i]))
+    plot.show()
+
+def plot_scatters(x, ys, title='plot'):
+    plot = Plot(title)
+    for j, y in enumerate(ys):
+        for i in range(min(len(x), len(y))):
+            plot.point(*transform(x[i], y[i], j))
+    plot.show()
+
+def _type_r(v, max_depth=None, _depth=0):
+    if type(v) in [int, float]: return 'number'
+    if max_depth != None and _depth == max_depth:
+        return str(type(v))
+    try:
+        v[0]
+        return '{}({})'.format(type(v), _type_r(v[0], max_depth, _depth+1))
+    except:
+        return str(type(v))
+
+def plot(*args, transform=_default_transform, title='plot'):
+    plot_func = None
+    if len(args) == 1:
+        if _type_r(args[0], 1) == _type_r([0]):
+            plot_func = plot_list
+        elif _type_r(args[0], 1) == _type_r([[]]):
+            plot_func = plot_lists
+    elif len(args) == 2:
+        if type(args[1], 1) == _type_r([0]):
+            plot_func = plot_scatter
+        elif type(args[1], 1) == _type_r([[]]):
+            plot_func = plot_scatters
+    if not plot_func:
+        raise Exception('unknown plot type for argument types {}'.format([type(i) for i in args]))
+    return plot_func(*args, transform=transform, title=title)
