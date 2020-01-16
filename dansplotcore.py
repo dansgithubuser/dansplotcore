@@ -31,7 +31,6 @@ class Plot:
     def show(self, w=640, h=480):
         media.init(w, h, title=self.title)
         media.custom_resize(True)
-        done = False
         dragging = False
         mouse = [0, 0]
         view = [self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min]
@@ -50,13 +49,15 @@ class Plot:
             view[3] = new_view_h
             media.view_set(*view)
         self._construct()
-        while not done:
+        while True:
             # handle events
             while True:
                 event = media.poll_event()
                 if not event: break
                 # quit
-                if event == 'q': done = True; break
+                if event == 'q':
+                    media.close()
+                    return
                 # resize
                 m = re.match(r'rw(\d+)h(\d+)', event)
                 if m:
