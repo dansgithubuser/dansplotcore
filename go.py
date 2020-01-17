@@ -39,6 +39,10 @@ if args.test:
 
 if args.package:
     os.chdir('package')
+    shutil.rmtree('dansplotcore', ignore_errors=True)
+    shutil.rmtree('dansplotcore.egg-info', ignore_errors=True)
+    shutil.rmtree('dist', ignore_errors=True)
+    os.mkdir('dansplotcore')
     shutil.copyfile(os.path.join('..', 'dansplotcore.py'), os.path.join('dansplotcore', '__init__.py'))
     invoke('python3 setup.py sdist')
     invoke('twine upload dist/*')
