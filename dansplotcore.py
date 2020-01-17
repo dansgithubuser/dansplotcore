@@ -174,13 +174,20 @@ def plot_lists(ls, transform=_default_transform, title='plot'):
             plot.point(*transform(i, v, j))
     plot.show()
 
-def plot_scatter(x, y, title='plot'):
+def plot_scatter(x, y, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for i in range(min(len(x), len(y))):
         plot.point(*transform(x[i], y[i]))
     plot.show()
 
-def plot_scatters(x, ys, title='plot'):
+def plot_scatter_xs(xs, y, transform=_default_transform, title='plot'):
+    plot = Plot(title)
+    for j, x in enumerate(xs):
+        for i in range(min(len(x), len(y))):
+            plot.point(*transform(x[i], y[i], j))
+    plot.show()
+
+def plot_scatter_ys(x, ys, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for j, y in enumerate(ys):
         for i in range(min(len(x), len(y))):
@@ -197,18 +204,20 @@ def _type_r(v, max_depth=None, _depth=0):
     except:
         return str(type(v))
 
+def _is_dim(v, dim):
+    u = 0
+    for i in range(dim): u = [u]
+    return _type_r(v, dim) == _type_r(u)
+
 def plot(*args, transform=_default_transform, title='plot'):
     plot_func = None
     if len(args) == 1:
-        if _type_r(args[0], 1) == _type_r([0]):
-            plot_func = plot_list
-        elif _type_r(args[0], 1) == _type_r([[]]):
-            plot_func = plot_lists
+        if   _is_dim(args[0], 1): plot_func = plot_list
+        elif _is_dim(args[0], 2): plot_func = plot_lists
     elif len(args) == 2:
-        if type(args[1], 1) == _type_r([0]):
-            plot_func = plot_scatter
-        elif type(args[1], 1) == _type_r([[]]):
-            plot_func = plot_scatters
+        if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = plot_scatter
+        elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = plot_scatter_xs
+        elif _is_dim(args[0], 1) and _is_dim(args[1], 2): plot_func = plot_scatter_ys
     if not plot_func:
         raise Exception('unknown plot type for argument types {}'.format([type(i) for i in args]))
     return plot_func(*args, transform=transform, title=title)
