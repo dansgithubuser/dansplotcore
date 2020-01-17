@@ -1,10 +1,11 @@
+import os
 from setuptools import setup
 
-with open('README.md') as f: readme = f.read()
+with open(os.path.join('..', 'README.md')) as f: readme = f.read()
 
 setup(
     name='dansplotcore',
-    version='1.1.2',
+    version='1.2.0',
     description='speedy interactive plots',
     long_description=readme,
     url='http://github.com/dansgithubuser/dansplotcore',
