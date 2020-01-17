@@ -139,7 +139,7 @@ class Plot:
                 s = '{:.8}'.format(-i)
                 media.vector_text(s, x=view[0]+margin_x, y=i-margin_y, h=8.0/media.height()*view[3])
                 media.line(x=view[0], w=12.0/media.width()*view[2], yi=i, yf=i)
-                i += view[2] / 8
+                i += view[3] / 8
             ## display
             media.display()
             media.capture_finish('plot.png')
