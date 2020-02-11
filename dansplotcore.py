@@ -206,6 +206,19 @@ def plot_scatter_ys(x, ys, transform=_default_transform, title='plot'):
             plot.point(*transform(x[i], y[i], j))
     plot.show()
 
+def plot_dict(d, transform=_default_transform, title='plot'):
+    plot = Plot(title)
+    for x, y in d.items():
+        plot.point(*transform(x, y))
+    plot.show()
+
+def plot_dicts(ds, transform=_default_transform, title='plot'):
+    plot = Plot(title)
+    for j, d in enumerate(ds):
+        for x, y in d.items():
+            plot.point(*transform(x, y, j))
+    plot.show()
+
 def _type_r(v, max_depth=None, _depth=0):
     if type(v) in [int, float]: return 'number'
     if max_depth != None and _depth == max_depth:
@@ -226,6 +239,8 @@ def plot(*args, transform=_default_transform, title='plot'):
     if len(args) == 1:
         if   _is_dim(args[0], 1): plot_func = plot_list
         elif _is_dim(args[0], 2): plot_func = plot_lists
+        elif type(args[0]) == dict: plot_func = plot_dict
+        elif _type_r(args[0]) == _type_r([{}]): plot_func = plot_dicts
     elif len(args) == 2:
         if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = plot_scatter
         elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = plot_scatter_xs
