@@ -10,6 +10,6 @@ setup(
     author_email='dansonlinepresence@gmail.com',
     license='MIT',
     packages=['dansplotcore'],
-    install_requires=['danssfmlpy==1.3.0'],
+    install_requires=['danssfmlpy==1.4.0'],
     zip_safe=False,
 )
