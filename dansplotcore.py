@@ -135,14 +135,14 @@ class Plot:
             self.vertex_buffer.draw()
             margin_x = 2.0 / media.width()  * view.w
             margin_y = 2.0 / media.height() * view.h
-            aspect = media.height() / media.width()
+            aspect = media.height() / media.width() * view.w / view.h
             ## x axis
             x_divs = media.width() // 200
             i = view.x + view.w / x_divs
             while i < view.x + (x_divs*2-1) * view.w / (x_divs*2):
                 s = '{:.8}'.format(i)
                 media.vector_text(s, x=i+margin_x, y=view.y+view.h-margin_y, h=10.0/media.height()*view.h, aspect=aspect)
-                media.line(xi=i, xf=i, y=view.y+view.h, h=-12.0/media.height()*view.w)
+                media.line(xi=i, xf=i, y=view.y+view.h, h=-12.0/media.height()*view.h)
                 i += view.w / x_divs
             ## y axis
             y_divs = media.height() // 80
