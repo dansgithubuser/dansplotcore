@@ -11,6 +11,15 @@ try:
 except:
     from danssfmlpy import media
 
+class View:
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+    def tuple(self): return [self.x, self.y, self.w, self.h]
+
 class Plot:
     def __init__(self, title='plot'):
         self.title = title
@@ -45,21 +54,21 @@ class Plot:
         self.y_min -= dy / 16
         self.x_max += dx / 16
         self.y_max += dy / 16
-        view = [self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min]
-        media.view_set(*view)
+        view = View(self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min)
+        media.view_set(*view.tuple())
         def move(view, dx, dy):
-            view[0] -= dx*view[2]/media.width()
-            view[1] -= dy*view[3]/media.height()
-            media.view_set(*view)
+            view.x -= dx*view.w/media.width()
+            view.y -= dy*view.h/media.height()
+            media.view_set(*view.tuple())
         def zoom(view, zx, zy, x, y):
             # change view so (x, y) stays put and (w, h) multiplies by (zx, zy)
-            new_view_w = view[2]*zx
-            new_view_h = view[3]*zy
-            view[0] += x/media.width () * (view[2] - new_view_w)
-            view[1] += y/media.height() * (view[3] - new_view_h)
-            view[2] = new_view_w
-            view[3] = new_view_h
-            media.view_set(*view)
+            new_view_w = view.w*zx
+            new_view_h = view.h*zy
+            view.x += x/media.width () * (view.w - new_view_w)
+            view.y += y/media.height() * (view.h - new_view_h)
+            view.w = new_view_w
+            view.h = new_view_h
+            media.view_set(*view.tuple())
         self._construct()
         while True:
             # handle events
@@ -124,22 +133,25 @@ class Plot:
             # draw
             media.clear(color=(0, 0, 0))
             self.vertex_buffer.draw()
-            margin_x = 2.0 / media.width()  * view[2]
-            margin_y = 2.0 / media.height() * view[3]
+            margin_x = 2.0 / media.width()  * view.w
+            margin_y = 2.0 / media.height() * view.h
+            aspect = media.height() / media.width()
             ## x axis
-            i = view[0] + view[2] / 8
-            while i < view[0] + 15 * view[2] / 16:
+            x_divs = media.width() // 200
+            i = view.x + view.w / x_divs
+            while i < view.x + (x_divs*2-1) * view.w / (x_divs*2):
                 s = '{:.8}'.format(i)
-                media.vector_text(s, x=i+margin_x, y=view[1]+view[3]-margin_y, h=8.0/media.height()*view[3])
-                media.line(xi=i, xf=i, y=view[1]+view[3], h=-12.0/media.height()*view[2])
-                i += view[2] / 8
+                media.vector_text(s, x=i+margin_x, y=view.y+view.h-margin_y, h=10.0/media.height()*view.h, aspect=aspect)
+                media.line(xi=i, xf=i, y=view.y+view.h, h=-12.0/media.height()*view.w)
+                i += view.w / x_divs
             ## y axis
-            i = view[1] + view[3] / 8
-            while i < view[1] + 15 * view[3] / 16:
+            y_divs = media.height() // 80
+            i = view.y + view.h / y_divs
+            while i < view.y + (y_divs*2-1) * view.h / (y_divs*2):
                 s = '{:.8}'.format(-i)
-                media.vector_text(s, x=view[0]+margin_x, y=i-margin_y, h=8.0/media.height()*view[3])
-                media.line(x=view[0], w=12.0/media.width()*view[2], yi=i, yf=i)
-                i += view[3] / 8
+                media.vector_text(s, x=view.x+margin_x, y=i-margin_y, h=10.0/media.height()*view.h, aspect=aspect)
+                media.line(x=view.x, w=12.0/media.width()*view.w, yi=i, yf=i)
+                i += view.h / y_divs
             ## display
             media.display()
             media.capture_finish('plot.png')
