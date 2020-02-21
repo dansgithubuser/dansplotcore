@@ -150,7 +150,7 @@ class Plot:
             text_h = 10.0/media.height()*view.h
             ## texts
             for (s, x, y, r, g, b, a) in self.texts:
-                media.vector_text(s, x=x, y=y-text_h/4, h=text_h, r=r, g=g, b=b, a=a)
+                media.vector_text(s, x=x, y=y-text_h/4, h=text_h, aspect=aspect, r=r, g=g, b=b, a=a)
                 media.line(x=x, y=y, w=text_h, h=0, r=r, g=g, b=b, a=a)
             ## x axis
             x_divs = media.width() // 200
