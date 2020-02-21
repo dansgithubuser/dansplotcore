@@ -25,6 +25,7 @@ class Plot:
         self.title = title
         self.points = []
         self.lines = []
+        self.texts = []
         self.x_min =  math.inf
         self.x_max = -math.inf
         self.y_min =  math.inf
@@ -41,6 +42,11 @@ class Plot:
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
+
+    def text(self, s, x, y, r=0, g=0, b=0, a=1):
+        y = -y
+        self.texts.append([s, x, y, r, g, b, a])
+        self._include(x, y)
 
     def show(self, w=640, h=480):
         media.init(w, h, title=self.title)
@@ -141,12 +147,17 @@ class Plot:
             margin_x = 2.0 / media.width()  * view.w
             margin_y = 2.0 / media.height() * view.h
             aspect = media.height() / media.width() * view.w / view.h
+            text_h = 10.0/media.height()*view.h
+            ## texts
+            for (s, x, y, r, g, b, a) in self.texts:
+                media.vector_text(s, x=x, y=y-text_h/4, h=text_h, r=r, g=g, b=b, a=a)
+                media.line(x=x, y=y, w=text_h, h=0, r=r, g=g, b=b, a=a)
             ## x axis
             x_divs = media.width() // 200
             i = view.x + view.w / x_divs
             while i < view.x + (x_divs*2-1) * view.w / (x_divs*2):
                 s = '{:.8}'.format(i)
-                media.vector_text(s, x=i+margin_x, y=view.y+view.h-margin_y, h=10.0/media.height()*view.h, aspect=aspect)
+                media.vector_text(s, x=i+margin_x, y=view.y+view.h-margin_y, h=text_h, aspect=aspect)
                 media.line(xi=i, xf=i, y=view.y+view.h, h=-12.0/media.height()*view.h)
                 i += view.w / x_divs
             ## y axis
@@ -154,7 +165,7 @@ class Plot:
             i = view.y + view.h / y_divs
             while i < view.y + (y_divs*2-1) * view.h / (y_divs*2):
                 s = '{:.8}'.format(-i)
-                media.vector_text(s, x=view.x+margin_x, y=i-margin_y, h=10.0/media.height()*view.h, aspect=aspect)
+                media.vector_text(s, x=view.x+margin_x, y=i-margin_y, h=text_h, aspect=aspect)
                 media.line(x=view.x, w=12.0/media.width()*view.w, yi=i, yf=i)
                 i += view.h / y_divs
             ## display

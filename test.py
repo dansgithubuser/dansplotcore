@@ -1,6 +1,7 @@
 import dansplotcore
 
 import random
+import string
 
 def random_position():
 	x = random.randint(512, 767)
@@ -14,16 +15,20 @@ def random_color_for_position(x, y):
 	a = random.randint(0, 255)
 	return (r, g, b, a)
 
-print('plotting random dots and lines, in (x=512..767, y=768..1023), reddish on right, greenish on top')
+print('plotting random dots, lines, text, in (x=512..767, y=768..1023), reddish on right, greenish on top')
 plot = dansplotcore.Plot('test')
 
 for i in range(10000):
 	x, y = random_position()
 	r, g, b, a = random_color_for_position(x, y)
-	if random.randint(0, 1):
+	choice = random.choice(['point', 'line', 'text'])
+	if choice == 'point':
+		plot.point(x, y, r, g, b, a)
+	elif choice == 'line':
 		xf, yf = random_position()
 		plot.line(x, y, xf, yf, r, g, b, a//4)
-	else:
-		plot.point(x, y, r, g, b, a)
+	elif choice == 'text' and not random.randint(0, 100):
+		s = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(1, 8)))
+		plot.text(s, x, y, r, g, b, a)
 
 plot.show()
