@@ -21,7 +21,7 @@ class View:
     def tuple(self): return [self.x, self.y, self.w, self.h]
 
 class Plot:
-    def __init__(self, title='plot'):
+    def __init__(self, title='plot', transform=None):
         self.title = title
         self.points = []
         self.lines = []
@@ -30,6 +30,24 @@ class Plot:
         self.x_max = -math.inf
         self.y_min =  math.inf
         self.y_max = -math.inf
+        self.series = 0
+        def default_transform(x, y, i, series):
+            colors = [
+                (255, 255, 255),
+                (255,   0,   0),
+                (  0, 255,   0),
+                (  0,   0, 255),
+                (255, 255,   0),
+                (  0, 255, 255),
+                (255,   0, 255),
+            ]
+            color = colors[series%len(colors)]
+            return {
+                'x': x, 'y': y,
+                'r': color[0], 'g': color[1], 'b': color[2],
+                'a': 255,
+            }
+        self.transform = transform or default_transform
 
     def point(self, x, y, r=0, g=0, b=0, a=255):
         y = -y
@@ -172,6 +190,64 @@ class Plot:
             media.display()
             media.capture_finish('plot.png')
 
+    def plot_list(self, l):
+        for i, v in enumerate(l):
+            self.point(**self.transform(i, v, i, self.series))
+        self.series += 1
+
+    def plot_lists(self, ls):
+        for l in ls: self.plot_list(l)
+
+    def plot_scatter(self, x, y):
+        for i in range(min(len(x), len(y))):
+            self.point(**self.transform(x[i], y[i], i, self.series))
+        self.series += 1
+
+    def plot_scatter_xs(self, xs, y):
+        for x in xs: self.plot_scatter(x, y)
+
+    def plot_scatter_ys(self, x, ys):
+        for y in ys: self.plot_scatter(x, y)
+
+    def plot_dict(self, d):
+        for x, y in d.items():
+            self.point(**self.transform(x, y, i, self.series))
+        self.series += 1
+
+    def plot_dicts(self, ds):
+        for d in ds: self.plot_dict(d)
+
+    def plot_f(self, f, x=(-1, 1), steps=100):
+        args_prev = None
+        for i in range(steps):
+            x_curr = x[0] + (x[1]-x[0]) * i/(steps-1)
+            y_curr = f(x_curr)
+            args_curr = self.transform(x_curr, y_curr, i, self.series)
+            if args_prev: self.line(
+                xi=args_prev['x'], yi=args_prev['y'],
+                xf=args_curr['x'], yf=args_curr['y'],
+                r=args_prev['r'], g=args_prev['g'], b=args_prev['b'], a=args_prev['a'],
+            )
+            args_prev = args_curr
+        self.series += 1
+
+    def plot(self, *args, **kwargs):
+        plot_func = None
+        if len(args) == 1:
+            if   _is_dim(args[0], 1): plot_func = self.plot_list
+            elif _is_dim(args[0], 2): plot_func = self.plot_lists
+            elif type(args[0]) == dict: plot_func = self.plot_dict
+            elif _type_r(args[0]) == _type_r([{}]): plot_func = self.plot_dicts
+            elif callable(args[0]): plot_func = self.plot_f
+        elif len(args) == 2:
+            if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = self.plot_scatter
+            elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = self.plot_scatter_xs
+            elif _is_dim(args[0], 1) and _is_dim(args[1], 2): plot_func = self.plot_scatter_ys
+        if not plot_func:
+            raise Exception('unknown plot type for argument types {}'.format([type(i) for i in args]))
+        plot_func(*args, **kwargs)
+        return self
+
     def _construct(self):
         # points
         points = media.VertexBuffer(len(self.points))
@@ -192,63 +268,8 @@ class Plot:
         self.y_min = min(y, self.y_min)
         self.y_max = max(y, self.y_max)
 
-def _default_transform(x, y, series=0):
-    colors = [
-        (255, 255, 255),
-        (255,   0,   0),
-        (  0, 255,   0),
-        (  0,   0, 255),
-        (255, 255,   0),
-        (  0, 255, 255),
-        (255,   0, 255),
-    ]
-    return (x, y, *colors[series%len(colors)], 255)
-
-def plot_list(l, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for i, v in enumerate(l):
-        plot.point(*transform(i, v))
-    plot.show()
-
-def plot_lists(ls, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for j, l in enumerate(ls):
-        for i, v in enumerate(l):
-            plot.point(*transform(i, v, j))
-    plot.show()
-
-def plot_scatter(x, y, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for i in range(min(len(x), len(y))):
-        plot.point(*transform(x[i], y[i]))
-    plot.show()
-
-def plot_scatter_xs(xs, y, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for j, x in enumerate(xs):
-        for i in range(min(len(x), len(y))):
-            plot.point(*transform(x[i], y[i], j))
-    plot.show()
-
-def plot_scatter_ys(x, ys, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for j, y in enumerate(ys):
-        for i in range(min(len(x), len(y))):
-            plot.point(*transform(x[i], y[i], j))
-    plot.show()
-
-def plot_dict(d, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for x, y in d.items():
-        plot.point(*transform(x, y))
-    plot.show()
-
-def plot_dicts(ds, transform=_default_transform, title='plot'):
-    plot = Plot(title)
-    for j, d in enumerate(ds):
-        for x, y in d.items():
-            plot.point(*transform(x, y, j))
-    plot.show()
+def plot(*args, title='plot'):
+    Plot(title).plot(*args).show()
 
 def _type_r(v, max_depth=None, _depth=0):
     if type(v) in [int, float]: return 'number'
@@ -264,18 +285,3 @@ def _is_dim(v, dim):
     u = 0
     for i in range(dim): u = [u]
     return _type_r(v, dim) == _type_r(u)
-
-def plot(*args, transform=_default_transform, title='plot'):
-    plot_func = None
-    if len(args) == 1:
-        if   _is_dim(args[0], 1): plot_func = plot_list
-        elif _is_dim(args[0], 2): plot_func = plot_lists
-        elif type(args[0]) == dict: plot_func = plot_dict
-        elif _type_r(args[0]) == _type_r([{}]): plot_func = plot_dicts
-    elif len(args) == 2:
-        if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = plot_scatter
-        elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = plot_scatter_xs
-        elif _is_dim(args[0], 1) and _is_dim(args[1], 2): plot_func = plot_scatter_ys
-    if not plot_func:
-        raise Exception('unknown plot type for argument types {}'.format([type(i) for i in args]))
-    return plot_func(*args, transform=transform, title=title)
