@@ -255,6 +255,21 @@ def plot_dicts(ds, transform=_default_transform, title='plot'):
             plot.point(**transform(x, y, i, j))
     plot.show()
 
+def plot_f(f, x=(-1, 1), steps=100, transform=_default_transform, title='plot'):
+    plot = Plot(title)
+    args_prev = None
+    for i in range(steps):
+        x_curr = x[0] + (x[1]-x[0]) * i/(steps-1)
+        y_curr = f(x_curr)
+        args_curr = transform(x_curr, y_curr, i)
+        if args_prev: plot.line(
+            xi=args_prev['x'], yi=args_prev['y'],
+            xf=args_curr['x'], yf=args_curr['y'],
+            r=args_prev['r'], g=args_prev['g'], b=args_prev['b'], a=args_prev['a'],
+        )
+        args_prev = args_curr
+    plot.show()
+
 def _type_r(v, max_depth=None, _depth=0):
     if type(v) in [int, float]: return 'number'
     if max_depth != None and _depth == max_depth:
