@@ -192,7 +192,7 @@ class Plot:
         self.y_min = min(y, self.y_min)
         self.y_max = max(y, self.y_max)
 
-def _default_transform(x, y, series=0):
+def _default_transform(x, y, i, series=0):
     colors = [
         (255, 255, 255),
         (255,   0,   0),
@@ -202,52 +202,57 @@ def _default_transform(x, y, series=0):
         (  0, 255, 255),
         (255,   0, 255),
     ]
-    return (x, y, *colors[series%len(colors)], 255)
+    color = colors[series%len(colors)]
+    return {
+        'x': x, 'y': y,
+        'r': color[0], 'g': color[1], 'b': color[2],
+        'a': 255,
+    }
 
 def plot_list(l, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for i, v in enumerate(l):
-        plot.point(*transform(i, v))
+        plot.point(**transform(i, v, i))
     plot.show()
 
 def plot_lists(ls, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for j, l in enumerate(ls):
         for i, v in enumerate(l):
-            plot.point(*transform(i, v, j))
+            plot.point(**transform(i, v, i, j))
     plot.show()
 
 def plot_scatter(x, y, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for i in range(min(len(x), len(y))):
-        plot.point(*transform(x[i], y[i]))
+        plot.point(**transform(x[i], y[i], i))
     plot.show()
 
 def plot_scatter_xs(xs, y, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for j, x in enumerate(xs):
         for i in range(min(len(x), len(y))):
-            plot.point(*transform(x[i], y[i], j))
+            plot.point(**transform(x[i], y[i], i, j))
     plot.show()
 
 def plot_scatter_ys(x, ys, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for j, y in enumerate(ys):
         for i in range(min(len(x), len(y))):
-            plot.point(*transform(x[i], y[i], j))
+            plot.point(**transform(x[i], y[i], i, j))
     plot.show()
 
 def plot_dict(d, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for x, y in d.items():
-        plot.point(*transform(x, y))
+        plot.point(**transform(x, y, i))
     plot.show()
 
 def plot_dicts(ds, transform=_default_transform, title='plot'):
     plot = Plot(title)
     for j, d in enumerate(ds):
         for x, y in d.items():
-            plot.point(*transform(x, y, j))
+            plot.point(**transform(x, y, i, j))
     plot.show()
 
 def _type_r(v, max_depth=None, _depth=0):
