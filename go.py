@@ -20,13 +20,16 @@ def invoke(invocation):
 def copy_into(path):
     shutil.copyfile(path, os.path.join('dansplotcore', os.path.basename(path)))
 
-if args.build:
+def build():
     try: os.mkdir('built')
     except: pass
     os.chdir('built')
     invoke('cmake -DCMAKE_BUILD_TYPE=Release ../danssfml/wrapper')
     invoke('cmake --build . --config Release')
     os.chdir('..')
+
+if args.build:
+    build()
 
 if args.interact:
     subprocess.check_call(['python', '-i', '-c', 'import dansplotcore; from dansplotcore import plot'])
@@ -38,6 +41,7 @@ if args.test:
     invoke('python test.py')
 
 if args.package:
+    build()
     os.chdir('package')
     shutil.rmtree('dansplotcore', ignore_errors=True)
     shutil.rmtree('dansplotcore.egg-info', ignore_errors=True)
