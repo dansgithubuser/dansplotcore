@@ -231,13 +231,14 @@ class Plot:
             args_prev = args_curr
         self.series += 1
 
-    def plot(self, *args):
+    def plot(self, *args, **kwargs):
         plot_func = None
         if len(args) == 1:
             if   _is_dim(args[0], 1): plot_func = self.plot_list
             elif _is_dim(args[0], 2): plot_func = self.plot_lists
             elif type(args[0]) == dict: plot_func = self.plot_dict
             elif _type_r(args[0]) == _type_r([{}]): plot_func = self.plot_dicts
+            elif callable(args[0]): plot_func = self.plot_f
         elif len(args) == 2:
             if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = self.plot_scatter
             elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = self.plot_scatter_xs
