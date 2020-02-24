@@ -268,8 +268,8 @@ class Plot:
         self.y_min = min(y, self.y_min)
         self.y_max = max(y, self.y_max)
 
-def plot(*args, title='plot'):
-    Plot(title).plot(*args).show()
+def plot(*args, title='plot', **kwargs):
+    Plot(title).plot(*args, **kwargs).show()
 
 def _type_r(v, max_depth=None, _depth=0):
     if type(v) in [int, float]: return 'number'
