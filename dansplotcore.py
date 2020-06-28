@@ -12,7 +12,7 @@ except:
     from danssfmlpy import media
 
 class View:
-    def __init__(self, x, y, w, h):
+    def __init__(self, x=None, y=None, w=None, h=None):
         self.x = x
         self.y = y
         self.w = w
@@ -83,12 +83,19 @@ class Plot:
         self.y_min -= dy / 16
         self.x_max += dx / 16
         self.y_max += dy / 16
-        view = View(self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min)
-        media.view_set(*view.tuple())
+        view = View()
+        def reset():
+            view.x = self.x_min
+            view.y = self.y_min
+            view.w = self.x_max-self.x_min
+            view.h = self.y_max-self.y_min
+            media.view_set(*view.tuple())
+            self.is_reset = True
         def move(view, dx, dy):
             view.x -= dx*view.w/media.width()
             view.y -= dy*view.h/media.height()
             media.view_set(*view.tuple())
+            self.is_reset = False
         def zoom(view, zx, zy, x, y):
             # change view so (x, y) stays put and (w, h) multiplies by (zx, zy)
             new_view_w = view.w*zx
@@ -98,6 +105,8 @@ class Plot:
             view.w = new_view_w
             view.h = new_view_h
             media.view_set(*view.tuple())
+            self.is_reset = False
+        reset()
         self._construct()
         while True:
             # handle events
@@ -158,7 +167,17 @@ class Plot:
                     if key in zooms:
                         zoom(view, *zooms[key], media.width()/2, media.height()/2)
                         continue
-                    if key == 'Return': media.capture_start()
+                    if key == 'Space':
+                        if not self.is_reset:
+                            reset()
+                        else:
+                            view.x = 0
+                            view.y = self.y_min
+                            view.w = self.x_max
+                            view.h = -self.y_min
+                            media.view_set(*view.tuple())
+                            self.is_reset = False
+                    elif key == 'Return': media.capture_start()
             # draw
             media.clear(color=(0, 0, 0))
             for i in self.vertex_buffers: i.draw()
@@ -188,7 +207,7 @@ class Plot:
                 i += view.h / y_divs
             ## display
             media.display()
-            media.capture_finish('plot.png')
+            media.capture_finish(self.title+'.png')
 
     def plot_list(self, l):
         for i, v in enumerate(l):
