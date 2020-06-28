@@ -90,10 +90,12 @@ class Plot:
             view.w = self.x_max-self.x_min
             view.h = self.y_max-self.y_min
             media.view_set(*view.tuple())
+            self.is_reset = True
         def move(view, dx, dy):
             view.x -= dx*view.w/media.width()
             view.y -= dy*view.h/media.height()
             media.view_set(*view.tuple())
+            self.is_reset = False
         def zoom(view, zx, zy, x, y):
             # change view so (x, y) stays put and (w, h) multiplies by (zx, zy)
             new_view_w = view.w*zx
@@ -103,6 +105,7 @@ class Plot:
             view.w = new_view_w
             view.h = new_view_h
             media.view_set(*view.tuple())
+            self.is_reset = False
         reset()
         self._construct()
         while True:
@@ -164,8 +167,17 @@ class Plot:
                     if key in zooms:
                         zoom(view, *zooms[key], media.width()/2, media.height()/2)
                         continue
-                    if key == 'Space': reset()
-                    if key == 'Return': media.capture_start()
+                    if key == 'Space':
+                        if not self.is_reset:
+                            reset()
+                        else:
+                            view.x = 0
+                            view.y = self.y_min
+                            view.w = self.x_max
+                            view.h = -self.y_min
+                            media.view_set(*view.tuple())
+                            self.is_reset = False
+                    elif key == 'Return': media.capture_start()
             # draw
             media.clear(color=(0, 0, 0))
             for i in self.vertex_buffers: i.draw()
