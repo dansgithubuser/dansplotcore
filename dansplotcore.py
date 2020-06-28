@@ -188,7 +188,7 @@ class Plot:
                 i += view.h / y_divs
             ## display
             media.display()
-            media.capture_finish('plot.png')
+            media.capture_finish(self.title+'.png')
 
     def plot_list(self, l):
         for i, v in enumerate(l):
