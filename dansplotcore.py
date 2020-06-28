@@ -12,7 +12,7 @@ except:
     from danssfmlpy import media
 
 class View:
-    def __init__(self, x, y, w, h):
+    def __init__(self, x=None, y=None, w=None, h=None):
         self.x = x
         self.y = y
         self.w = w
@@ -83,8 +83,13 @@ class Plot:
         self.y_min -= dy / 16
         self.x_max += dx / 16
         self.y_max += dy / 16
-        view = View(self.x_min, self.y_min, self.x_max-self.x_min, self.y_max-self.y_min)
-        media.view_set(*view.tuple())
+        view = View()
+        def reset():
+            view.x = self.x_min
+            view.y = self.y_min
+            view.w = self.x_max-self.x_min
+            view.h = self.y_max-self.y_min
+            media.view_set(*view.tuple())
         def move(view, dx, dy):
             view.x -= dx*view.w/media.width()
             view.y -= dy*view.h/media.height()
@@ -98,6 +103,7 @@ class Plot:
             view.w = new_view_w
             view.h = new_view_h
             media.view_set(*view.tuple())
+        reset()
         self._construct()
         while True:
             # handle events
@@ -158,6 +164,7 @@ class Plot:
                     if key in zooms:
                         zoom(view, *zooms[key], media.width()/2, media.height()/2)
                         continue
+                    if key == 'Space': reset()
                     if key == 'Return': media.capture_start()
             # draw
             media.clear(color=(0, 0, 0))
