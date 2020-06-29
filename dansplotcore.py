@@ -4,11 +4,12 @@ import re
 import sys
 
 DIR = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(DIR, 'danssfml', 'wrapper'))
 
-try:
+wrapper_path = os.path.join(DIR, 'danssfml', 'wrapper')
+if os.path.exists(wrapper_path):
+    sys.path.append(wrapper_path)
     import media
-except:
+else:
     from danssfmlpy import media
 
 class View:
