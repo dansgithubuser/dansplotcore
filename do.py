@@ -34,13 +34,13 @@ if args.build:
     build()
 
 if args.interact:
-    subprocess.check_call(['python', '-i', '-c', 'import dansplotcore; from dansplotcore import plot'])
+    subprocess.check_call(['python3', '-i', '-c', 'import dansplotcore; from dansplotcore import plot'])
 
 if args.command:
-    subprocess.check_call(['python', '-c', 'import dansplotcore; from dansplotcore import plot; '+args.command])
+    subprocess.check_call(['python3', '-c', 'import dansplotcore; from dansplotcore import plot; '+args.command])
 
 if args.test:
-    invoke('python test.py')
+    invoke('python3 test.py')
 
 if args.package:
     build()
