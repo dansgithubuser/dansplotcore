@@ -172,7 +172,7 @@ class Plot:
                         if not self.is_reset:
                             reset()
                         else:
-                            view.x = 0
+                            view.x = 0.0
                             view.y = self.y_min
                             view.w = self.x_max
                             view.h = -self.y_min
@@ -191,21 +191,30 @@ class Plot:
                 media.vector_text(s, x=x, y=y-text_h/4, h=text_h, aspect=aspect, r=r, g=g, b=b, a=a)
                 media.line(x=x, y=y, w=text_h, h=0, r=r, g=g, b=b, a=a)
             ## x axis
-            x_divs = media.width() // 200
-            i = view.x + view.w / x_divs
-            while i < view.x + (x_divs*2-1) * view.w / (x_divs*2):
-                s = '{:.8}'.format(i)
-                media.vector_text(s, x=i+margin_x, y=view.y+view.h-margin_y, h=text_h, aspect=aspect)
+            increment = 10 ** int(math.log10(view.w))
+            if view.w / increment < 2:
+                increment /= 5
+            elif view.w / increment < 5:
+                increment /= 2
+            i = view.x // increment * increment + increment
+            while i < view.x + view.w:
+                s = '{:.5}'.format(i)
+                if view.x + view.w - i > increment:
+                    media.vector_text(s, x=i+margin_x, y=view.y+view.h-margin_y, h=text_h, aspect=aspect)
                 media.line(xi=i, xf=i, y=view.y+view.h, h=-12.0/media.height()*view.h)
-                i += view.w / x_divs
+                i += increment
             ## y axis
-            y_divs = media.height() // 80
-            i = view.y + view.h / y_divs
-            while i < view.y + (y_divs*2-1) * view.h / (y_divs*2):
-                s = '{:.8}'.format(-i)
+            increment = 10 ** int(math.log10(view.h))
+            if view.h / increment < 2:
+                increment /= 5
+            elif view.h / increment < 5:
+                increment /= 2
+            i = (view.y + text_h + 2*margin_y) // increment * increment + increment
+            while i < view.y + view.h - (text_h + 2*margin_y):
+                s = '{:.5}'.format(-i)
                 media.vector_text(s, x=view.x+margin_x, y=i-margin_y, h=text_h, aspect=aspect)
                 media.line(x=view.x, w=12.0/media.width()*view.w, yi=i, yf=i)
-                i += view.h / y_divs
+                i += increment
             ## display
             media.display()
             media.capture_finish(self.title+'.png')
