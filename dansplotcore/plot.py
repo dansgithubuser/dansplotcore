@@ -1,13 +1,6 @@
+from . import transforms
+
 import math
-
-class View:
-    def __init__(self, x=None, y=None, w=None, h=None):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-
-    def tuple(self): return [self.x, self.y, self.w, self.h]
 
 class Plot:
     def __init__(self, title='plot', transform=None, hide_axes=False):
@@ -20,23 +13,7 @@ class Plot:
         self.y_min =  math.inf
         self.y_max = -math.inf
         self.series = 0
-        def default_transform(x, y, i, series):
-            colors = [
-                (255, 255, 255),
-                (255,   0,   0),
-                (  0, 255,   0),
-                (  0,   0, 255),
-                (255, 255,   0),
-                (  0, 255, 255),
-                (255,   0, 255),
-            ]
-            color = colors[series%len(colors)]
-            return {
-                'x': x, 'y': y,
-                'r': color[0], 'g': color[1], 'b': color[2],
-                'a': 255,
-            }
-        self.transform = transform or default_transform
+        self.transform = transform or transforms.default
         self.hide_axes = hide_axes
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
