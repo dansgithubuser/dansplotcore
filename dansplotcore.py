@@ -51,19 +51,19 @@ class Plot:
         self.transform = transform or default_transform
         self.hide_axes = hide_axes
 
-    def point(self, x, y, r=0, g=0, b=0, a=255):
+    def point(self, x, y, r=255, g=255, b=255, a=255):
         y = -y
         self.points.append([x, y, r, g, b, a])
         self._include(x, y)
 
-    def line(self, xi, yi, xf, yf, r=0, g=0, b=0, a=255):
+    def line(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
         yi = -yi
         yf = -yf
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
 
-    def text(self, s, x, y, r=0, g=0, b=0, a=255):
+    def text(self, s, x, y, r=255, g=255, b=255, a=255):
         y = -y
         self.texts.append([s, x, y, r, g, b, a])
         self._include(x, y)
