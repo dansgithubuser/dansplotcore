@@ -13,7 +13,7 @@ class Plot:
         self.y_min =  math.inf
         self.y_max = -math.inf
         self.series = 0
-        self.transform = transform or transforms.default
+        self.transform = transform or transforms.Default()
         self.hide_axes = hide_axes
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
@@ -73,7 +73,10 @@ class Plot:
             if args_prev: self.line(
                 xi=args_prev['x'], yi=args_prev['y'],
                 xf=args_curr['x'], yf=args_curr['y'],
-                r=args_prev['r'], g=args_prev['g'], b=args_prev['b'], a=args_prev['a'],
+                r=args_prev.get('r', 255),
+                g=args_prev.get('g', 255),
+                b=args_prev.get('b', 255),
+                a=args_prev.get('a', 255),
             )
             args_prev = args_curr
         self.series += 1
