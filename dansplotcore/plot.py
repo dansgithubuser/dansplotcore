@@ -57,7 +57,7 @@ class Plot:
         for y in ys: self.plot_scatter(x, y)
 
     def plot_dict(self, d):
-        for x, y in d.items():
+        for i, (x, y) in enumerate(d.items()):
             self.point(**self.transform(x, y, i, self.series))
         self.series += 1
 
