@@ -50,6 +50,11 @@ class Plot:
             self.point(**self.transform(x[i], y[i], i, self.series))
         self.series += 1
 
+    def plot_scatter_pairs(self, pairs):
+        for i, pair in enumerate(pairs):
+            self.point(**self.transform(pair[0], pair[1], i, self.series))
+        self.series += 1
+
     def plot_scatter_xs(self, xs, y):
         for x in xs: self.plot_scatter(x, y)
 
