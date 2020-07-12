@@ -91,6 +91,7 @@ class Plot:
         if len(args) == 1:
             if   _is_dim(args[0], 1): plot_func = self.plot_list
             elif _is_dim(args[0], 2): plot_func = self.plot_lists
+            elif _type_r(args[0]) == _type_r([(0,)]): plot_func = self.plot_scatter_pairs
             elif type(args[0]) == dict: plot_func = self.plot_dict
             elif _type_r(args[0]) == _type_r([{}]): plot_func = self.plot_dicts
             elif callable(args[0]): plot_func = self.plot_f
