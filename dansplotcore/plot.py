@@ -1,12 +1,20 @@
+from . import primitives
 from . import transforms
 
 import math
 
 class Plot:
-    def __init__(self, title='plot', transform=None, hide_axes=False):
+    def __init__(
+        self,
+        title='plot',
+        transform=None,
+        hide_axes=False,
+        primitive=None,
+    ):
         self.title = title
         self.points = []
         self.lines = []
+        self.late_vertexors = []
         self.texts = []
         self.x_min =  math.inf
         self.x_max = -math.inf
@@ -15,6 +23,7 @@ class Plot:
         self.series = 0
         self.transform = transform or transforms.Default()
         self.hide_axes = hide_axes
+        self.primitive = (primitive or primitives.Point()).set_plot(self)
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
         y = -y
@@ -28,6 +37,9 @@ class Plot:
         self._include(xi, yi)
         self._include(xf, yf)
 
+    def late_vertexor(self, vertexor):
+        self.late_vertexors.append(vertexor)
+
     def text(self, s, x, y, r=255, g=255, b=255, a=255):
         y = -y
         self.texts.append([s, x, y, r, g, b, a])
@@ -39,7 +51,7 @@ class Plot:
 
     def plot_list(self, l):
         for i, v in enumerate(l):
-            self.point(**self.transform(i, v, i, self.series))
+            self.primitive(**self.transform(i, v, i, self.series))
         self.series += 1
 
     def plot_lists(self, ls):
@@ -47,12 +59,12 @@ class Plot:
 
     def plot_scatter(self, x, y):
         for i in range(min(len(x), len(y))):
-            self.point(**self.transform(x[i], y[i], i, self.series))
+            self.primitive(**self.transform(x[i], y[i], i, self.series))
         self.series += 1
 
     def plot_scatter_pairs(self, pairs):
         for i, pair in enumerate(pairs):
-            self.point(**self.transform(pair[0], pair[1], i, self.series))
+            self.primitive(**self.transform(pair[0], pair[1], i, self.series))
         self.series += 1
 
     def plot_scatter_xs(self, xs, y):
@@ -63,7 +75,7 @@ class Plot:
 
     def plot_dict(self, d):
         for i, (x, y) in enumerate(d.items()):
-            self.point(**self.transform(x, y, i, self.series))
+            self.primitive(**self.transform(x, y, i, self.series))
         self.series += 1
 
     def plot_dicts(self, ds):
@@ -74,16 +86,7 @@ class Plot:
         for i in range(steps):
             x_curr = x[0] + (x[1]-x[0]) * i/(steps-1)
             y_curr = f(x_curr)
-            args_curr = self.transform(x_curr, y_curr, i, self.series)
-            if args_prev: self.line(
-                xi=args_prev['x'], yi=args_prev['y'],
-                xf=args_curr['x'], yf=args_curr['y'],
-                r=args_prev.get('r', 255),
-                g=args_prev.get('g', 255),
-                b=args_prev.get('b', 255),
-                a=args_prev.get('a', 255),
-            )
-            args_prev = args_curr
+            self.primitive(**self.transform(x_curr, y_curr, i, self.series))
         self.series += 1
 
     def plot(self, *args, **kwargs):
@@ -110,8 +113,20 @@ class Plot:
         self.y_min = min(y, self.y_min)
         self.y_max = max(y, self.y_max)
 
-def plot(*args, title='plot', **kwargs):
-    Plot(title).plot(*args, **kwargs).show()
+def plot(
+    *args,
+    title='plot',
+    transform=None,
+    hide_axes=False,
+    primitive=None,
+    **kwargs,
+):
+    Plot(
+        title,
+        transform,
+        hide_axes,
+        primitive,
+    ).plot(*args, **kwargs).show()
 
 def _type_r(v, max_depth=None, _depth=0):
     if type(v) in [int, float]: return 'number'
