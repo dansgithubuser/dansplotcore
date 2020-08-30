@@ -1,4 +1,4 @@
-import dansplotcore
+import dansplotcore as dpc
 
 import random
 import string
@@ -17,7 +17,7 @@ def random_color_for_position(x, y):
 
 #===== general =====#
 print('plotting random dots, lines, text, in (x=512..767, y=768..1023), reddish on right, greenish on top')
-plot = dansplotcore.Plot('test')
+plot = dpc.Plot('test')
 
 for i in range(10000):
     x, y = random_position()
@@ -41,9 +41,9 @@ print('''plotting a grid of simple plots:
     - random dots; half-slope line\
 ''')
 size = 120
-plot = dansplotcore.Plot(
+plot = dpc.Plot(
     'test2',
-    transform=dansplotcore.transforms.Grid(size, size, 4),
+    transform=dpc.transforms.Grid(size, size, 4),
     hide_axes=True,
 )
 
@@ -59,5 +59,11 @@ plot.plot(lambda x: x / 2, x=(0, size))
 plot.show()
 
 #===== primitives =====#
-print('plotting a function with samples connected by lines')
-dansplotcore.plot(lambda x: x*x, primitive=dansplotcore.primitives.Line())
+print('plotting a function with samples marked by pluses and connected by lines')
+dpc.plot(
+    lambda x: x*x,
+    primitive=dpc.primitives.Compound(
+        dpc.primitives.Line(),
+        dpc.primitives.Plus(),
+    ),
+)

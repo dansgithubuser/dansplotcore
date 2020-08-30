@@ -1,3 +1,4 @@
+import copy
 import math
 import os
 import re
@@ -21,7 +22,17 @@ class View:
 
     def tuple(self): return [self.x, self.y, self.w, self.h]
 
-def construct(plot):
+def construct(plot, view, w, h):
+    # late vertexors
+    if plot.late_vertexors:
+        if hasattr(plot, 'original_points'):
+            plot.points = copy.copy(plot.original_points)
+            plot.lines = copy.copy(plot.original_lines)
+        else:
+            plot.original_points = copy.copy(plot.points)
+            plot.original_lines = copy.copy(plot.lines)
+        for i in plot.late_vertexors:
+            i(view, w, h)
     # points
     points = media.VertexBuffer(len(plot.points))
     for i, point in enumerate(plot.points):
@@ -76,7 +87,7 @@ def show(plot, w, h):
         media.view_set(*view.tuple())
         plot.is_reset = False
     reset()
-    construct(plot)
+    construct(plot, view, w, h)
     while True:
         # handle events
         while True:
@@ -91,6 +102,8 @@ def show(plot, w, h):
             if m:
                 w, h = (int(i) for i in m.groups())
                 zoom(view, w/media.width(), h/media.height(), w/2, h/2)
+                if plot.late_vertexors:
+                    construct(plot, view, media.width(), media.height())
                 continue
             # left mouse button
             if event[0] == 'b':
@@ -114,6 +127,7 @@ def show(plot, w, h):
                 delta = int(event[1:])
                 z = 1.25 if delta > 0 else 0.8
                 zoom(view, z, z, mouse[0], mouse[1])
+                continue
             # keyboard
             m = re.match('<(.+)', event)
             if m:
@@ -146,7 +160,11 @@ def show(plot, w, h):
                         view.h = -plot.y_min
                         media.view_set(*view.tuple())
                         plot.is_reset = False
-                elif key == 'Return': media.capture_start()
+                    continue
+                if key == 'Return':
+                    media.capture_start()
+                    continue
+                continue
         # draw
         media.clear(color=(0, 0, 0))
         for i in plot.vertex_buffers: i.draw()

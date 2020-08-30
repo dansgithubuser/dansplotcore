@@ -14,6 +14,7 @@ class Plot:
         self.title = title
         self.points = []
         self.lines = []
+        self.late_vertexors = []
         self.texts = []
         self.x_min =  math.inf
         self.x_max = -math.inf
@@ -35,6 +36,9 @@ class Plot:
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
+
+    def late_vertexor(self, vertexor):
+        self.late_vertexors.append(vertexor)
 
     def text(self, s, x, y, r=255, g=255, b=255, a=255):
         y = -y
