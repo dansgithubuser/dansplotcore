@@ -35,7 +35,11 @@ for i in range(10000):
 plot.show()
 
 #===== grid =====#
-print('plotting a grid of simple plots')
+print('''plotting a grid of simple plots:
+    - lines with increasing slopes
+    - sideways parabola; 3 parabolas getting wider
+    - random dots; half-slope line\
+''')
 size = 120
 plot = dansplotcore.Plot(
     'test2',
@@ -45,9 +49,15 @@ plot = dansplotcore.Plot(
 
 plot.plot([i for i in range(size)])
 plot.plot([[i*j%size for i in range(size)] for j in range(2, 5)])
+
 plot.plot([(i-10)**2 for i in range(0, 20)], [i for i in range(0, 20)])
 plot.plot([[i*j%size for i in range(size)] for j in range(1, 4)], [i*i for i in range(10)])
+
 plot.plot({random.randint(0, size): random.randint(0, size) for i in range(size)})
-plot.plot(lambda x: x / 2)
+plot.plot(lambda x: x / 2, x=(0, size))
 
 plot.show()
+
+#===== primitives =====#
+print('plotting a function with samples connected by lines')
+dansplotcore.plot(lambda x: x*x, primitive=dansplotcore.primitives.Line())
