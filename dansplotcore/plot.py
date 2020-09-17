@@ -52,7 +52,7 @@ class Plot:
     def plot_list(self, l):
         for i, v in enumerate(l):
             self.primitive(**self.transform(i, v, i, self.series))
-        self.series += 1
+        self.next_series()
 
     def plot_lists(self, ls):
         for l in ls: self.plot_list(l)
@@ -60,12 +60,12 @@ class Plot:
     def plot_scatter(self, x, y):
         for i in range(min(len(x), len(y))):
             self.primitive(**self.transform(x[i], y[i], i, self.series))
-        self.series += 1
+        self.next_series()
 
     def plot_scatter_pairs(self, pairs):
         for i, pair in enumerate(pairs):
             self.primitive(**self.transform(pair[0], pair[1], i, self.series))
-        self.series += 1
+        self.next_series()
 
     def plot_scatter_xs(self, xs, y):
         for x in xs: self.plot_scatter(x, y)
@@ -76,7 +76,7 @@ class Plot:
     def plot_dict(self, d):
         for i, (x, y) in enumerate(d.items()):
             self.primitive(**self.transform(x, y, i, self.series))
-        self.series += 1
+        self.next_series()
 
     def plot_dicts(self, ds):
         for d in ds: self.plot_dict(d)
@@ -87,7 +87,7 @@ class Plot:
             x_curr = x[0] + (x[1]-x[0]) * i/(steps-1)
             y_curr = f(x_curr)
             self.primitive(**self.transform(x_curr, y_curr, i, self.series))
-        self.series += 1
+        self.next_series()
 
     def plot(self, *args, **kwargs):
         plot_func = None
@@ -106,6 +106,10 @@ class Plot:
             raise Exception('unknown plot type for argument types {}'.format([type(i) for i in args]))
         plot_func(*args, **kwargs)
         return self
+
+    def next_series(self):
+        self.series += 1
+        self.primitive.reset()
 
     def _include(self, x, y):
         self.x_min = min(x, self.x_min)

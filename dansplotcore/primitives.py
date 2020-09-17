@@ -5,6 +5,9 @@ class _Base:
         self.plot = weakref.proxy(plot)
         return self
 
+    def reset(self):
+        pass
+
 class Point(_Base):
     def __call__(self, x, y, r=255, g=255, b=255, a=255):
         self.plot.point(x, y, r, g, b, a)
@@ -23,8 +26,7 @@ class Plus(_Base):
 
 class Line(_Base):
     def __init__(self):
-        self.x = None
-        self.y = None
+        self.reset()
 
     def __call__(self, x, y, r=255, g=255, b=255, a=255):
         if self.x:
@@ -33,6 +35,10 @@ class Line(_Base):
             self.plot.point(x, y, r, g, b, a)
         self.x = x
         self.y = y
+
+    def reset(self):
+        self.x = None
+        self.y = None
 
 class Compound(_Base):
     def __init__(self, *primitives):
@@ -46,3 +52,7 @@ class Compound(_Base):
         for i in self.primitives:
             i.set_plot(plot)
         return self
+
+    def reset(self):
+        for i in self.primitives:
+            i.reset()
