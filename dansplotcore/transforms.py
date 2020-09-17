@@ -62,3 +62,16 @@ class Gradient:
             'x': x, 'y': y,
             'r': color.r, 'g': color.g, 'b': color.b,
         }
+
+class Compound:
+    def __init__(self, significant, *others):
+        self.significant = significant
+        self.others = others
+
+    def __call__(self, x, y, i, series):
+        result = {'x': x, 'y': y}
+        for trans, mod in reversed(self.others):
+            result.update(trans(result['x'], result['y'], i, series % mod))
+            series //= mod
+        result.update(self.significant(result['x'], result['y'], i, series))
+        return result

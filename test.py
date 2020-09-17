@@ -67,3 +67,23 @@ dpc.plot(
         dpc.primitives.Plus(),
     ),
 )
+
+#===== compound transform =====#
+print('''plotting white and red fences:
+    - with increasing frequency
+    - in upside-down-L-shaped groups of 3
+    - in a grid with 3 columns
+''')
+plot = dpc.Plot(
+    'test4',
+    transform=dpc.transforms.Compound(
+        dpc.transforms.Grid(10, 8, 3),
+        (dpc.transforms.Grid(3, 2, 2), 3),
+        (dpc.transforms.Default(), 2),
+    ),
+    hide_axes=True,
+)
+for j in range(1, 31):
+    for k in [-1, 1]:
+        plot.plot(lambda i: k*j/10*i%1)
+plot.show()
