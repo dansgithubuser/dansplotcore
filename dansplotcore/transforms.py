@@ -30,9 +30,13 @@ Color.all = [
 ]
 
 class Default:
+    def __init__(self, colors=Color.all):
+        if type(colors) == str:
+            colors = [getattr(Color, i) for i in colors]
+        self.colors = colors
+
     def __call__(self, x, y, i, series):
-        colors = Color.all
-        color = colors[series % len(colors)]
+        color = self.colors[series % len(self.colors)]
         return {
             'x': x, 'y': y,
             'r': color.r, 'g': color.g, 'b': color.b,
