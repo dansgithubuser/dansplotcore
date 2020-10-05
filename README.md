@@ -17,4 +17,3 @@ Dan's Plot Core is a minimal library that adds plots with low-latency interactiv
 
 ## todo
 - screen-relative text
-- custom aspect (esp. force x and y pixels to represent same unit)

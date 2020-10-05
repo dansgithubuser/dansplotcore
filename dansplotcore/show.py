@@ -150,16 +150,39 @@ def show(plot, w, h):
                 if key in zooms:
                     zoom(view, *zooms[key], media.width()/2, media.height()/2)
                     continue
-                if key == 'Space':
-                    if not plot.is_reset:
-                        reset()
+                if key == 'x':
+                    zoom(view, 1, view.w / view.h, media.width()/2, media.height()/2)
+                    continue
+                if key == 'q':
+                    if plot.y_max > 0:
+                        view.y = 0.0
+                        view.h = 17/16 * plot.y_max
                     else:
+                        view.y = 17/16 * plot.y_max
+                        view.h = 17/16 * abs(plot.y_max)
+                    media.view_set(*view.tuple())
+                    plot.is_reset = False
+                    continue
+                if key == 'c':
+                    if plot.x_max > 0:
                         view.x = 0.0
-                        view.y = plot.y_min
-                        view.w = plot.x_max
-                        view.h = -plot.y_min
-                        media.view_set(*view.tuple())
-                        plot.is_reset = False
+                        view.w = 17/16 * abs(plot.x_max)
+                    else:
+                        view.x = 17/16 * plot.x_max
+                        view.w = 17/16 * abs(plot.x_max)
+                    media.view_set(*view.tuple())
+                    plot.is_reset = False
+                    continue
+                if key == 'z':
+                    view.x = -17/16 * abs(plot.x_max)
+                    view.w = +34/16 * abs(plot.x_max)
+                    view.y = -17/16 * abs(plot.y_max)
+                    view.h = +34/16 * abs(plot.y_max)
+                    media.view_set(*view.tuple())
+                    plot.is_reset = False
+                    continue
+                if key == 'Space':
+                    reset()
                     continue
                 if key == 'Return':
                     media.capture_start()
