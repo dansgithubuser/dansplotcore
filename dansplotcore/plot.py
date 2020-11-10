@@ -23,7 +23,7 @@ class Plot:
         self.series = 0
         self.transform = transform or transforms.Default()
         self.hide_axes = hide_axes
-        self.primitive = (primitive or primitives.Point()).set_plot(self)
+        self.set_primitive(primitive or primitives.Point())
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
         y = -y
@@ -110,6 +110,9 @@ class Plot:
     def next_series(self):
         self.series += 1
         self.primitive.reset()
+
+    def set_primitive(self, primitive):
+        self.primitive = primitive.set_plot(self)
 
     def _include(self, x, y):
         self.x_min = min(x, self.x_min)
