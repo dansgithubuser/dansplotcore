@@ -41,7 +41,7 @@ class Line(_Base):
         self.reset()
 
     def __call__(self, x, y, r=255, g=255, b=255, a=255):
-        if self.x:
+        if self.x is not None:
             self.plot.line(self.x, self.y, x, y, r, g, b, a)
         else:
             self.plot.point(x, y, r, g, b, a)
