@@ -13,6 +13,13 @@ def random_position():
     y = random.randint(768, 1023)
     return (x, y)
 
+def random_color():
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(0, 255)
+    a = random.randint(0, 255)
+    return (r, g, b, a)
+
 def random_color_for_position(x, y):
     r = random.randint(0, 255) % (x-512+1)
     g = random.randint(0, 255) % (y-768+1)
@@ -102,4 +109,18 @@ if args.case in ['4', 'compound-transform', 'all']:
     for j in range(1, 31):
         for k in [-1, 1]:
             plot.plot(lambda i: k*j/10*i%1)
+    plot.show()
+
+#===== rects =====#
+if args.case in ['5', 'rects', 'all']:
+    print('''plotting rects
+        - in a 5x5 grid
+        - with random colors
+    ''')
+    plot = dpc.Plot('test5', hide_axes=True)
+    for x in range(5):
+        for y in range(5):
+            color = random_color()
+            plot.rect(x, y, x+1, y+1, *color)
+            plot.text(f'{color}', x, y)
     plot.show()

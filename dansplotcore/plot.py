@@ -14,6 +14,7 @@ class Plot:
         self.title = title
         self.points = []
         self.lines = []
+        self.rects = []
         self.late_vertexors = []
         self.texts = []
         self.x_min =  math.inf
@@ -34,6 +35,13 @@ class Plot:
         yi = -yi
         yf = -yf
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
+        self._include(xi, yi)
+        self._include(xf, yf)
+
+    def rect(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
+        yi = -yi
+        yf = -yf
+        self.rects.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
 

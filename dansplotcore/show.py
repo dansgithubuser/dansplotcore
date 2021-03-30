@@ -43,8 +43,18 @@ def construct(plot, view, w, h):
     for i, (xi, yi, xf, yf, r, g, b, a) in enumerate(plot.lines):
         lines.update(2*i+0, xi, yi, r, g, b, a)
         lines.update(2*i+1, xf, yf, r, g, b, a)
+    # rects
+    rects = media.VertexBuffer(6*len(plot.rects))
+    rects.set_type('triangles')
+    for i, (xi, yi, xf, yf, r, g, b, a) in enumerate(plot.rects):
+        rects.update(6*i+0, xi, yi, r, g, b, a)
+        rects.update(6*i+1, xf, yf, r, g, b, a)
+        rects.update(6*i+2, xi, yf, r, g, b, a)
+        rects.update(6*i+3, xi, yi, r, g, b, a)
+        rects.update(6*i+4, xf, yf, r, g, b, a)
+        rects.update(6*i+5, xf, yi, r, g, b, a)
     # order
-    plot.vertex_buffers = [lines, points]
+    plot.vertex_buffers = [rects, lines, points]
 
 def show(plot, w, h):
     media.init(w, h, title=plot.title)
