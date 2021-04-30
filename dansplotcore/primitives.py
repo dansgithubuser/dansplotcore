@@ -22,7 +22,7 @@ class Plus(_Base):
             size_y = self.size / h * view.h
             self.plot.line(x-size_x, y, x+size_x, y, r, g, b, a)
             self.plot.line(x, y-size_y, x, y+size_y, r, g, b, a)
-        self.plot.late_vertexor(vertexor)
+        self.plot.late_vertexor(vertexor, x, y)
 
 class Cross(_Base):
     def __init__(self, size=5):
@@ -34,7 +34,7 @@ class Cross(_Base):
             size_y = self.size / h * view.h
             self.plot.line(x-size_x, y-size_y, x+size_x, y+size_y, r, g, b, a)
             self.plot.line(x-size_x, y+size_y, x+size_x, y-size_y, r, g, b, a)
-        self.plot.late_vertexor(vertexor)
+        self.plot.late_vertexor(vertexor, x, y)
 
 class Line(_Base):
     def __init__(self):
