@@ -22,12 +22,13 @@ class View:
 
     def tuple(self): return [self.x, self.y, self.w, self.h]
 
+def icolor(r, g, b, a):
+    return [
+        i if type(i) == int else int(255*i)
+        for i in [r, g, b, a]
+    ]
+
 def construct(plot, view, w, h):
-    def _color(r, g, b, a):
-        return [
-            i if type(i) == int else int(255*i)
-            for i in [r, g, b, a]
-        ]
     # late vertexors
     if plot.late_vertexors:
         if hasattr(plot, 'original_points'):
@@ -41,23 +42,23 @@ def construct(plot, view, w, h):
     # points
     points = media.VertexBuffer(len(plot.points))
     for i, (x, y, r, g, b, a) in enumerate(plot.points):
-        points.update(i, x, y, *_color(r, g, b, a))
+        points.update(i, x, y, *icolor(r, g, b, a))
     # lines
     lines = media.VertexBuffer(2*len(plot.lines))
     lines.set_type('lines')
     for i, (xi, yi, xf, yf, r, g, b, a) in enumerate(plot.lines):
-        lines.update(2*i+0, xi, yi, *_color(r, g, b, a))
-        lines.update(2*i+1, xf, yf, *_color(r, g, b, a))
+        lines.update(2*i+0, xi, yi, *icolor(r, g, b, a))
+        lines.update(2*i+1, xf, yf, *icolor(r, g, b, a))
     # rects
     rects = media.VertexBuffer(6*len(plot.rects))
     rects.set_type('triangles')
     for i, (xi, yi, xf, yf, r, g, b, a) in enumerate(plot.rects):
-        rects.update(6*i+0, xi, yi, *_color(r, g, b, a))
-        rects.update(6*i+1, xf, yf, *_color(r, g, b, a))
-        rects.update(6*i+2, xi, yf, *_color(r, g, b, a))
-        rects.update(6*i+3, xi, yi, *_color(r, g, b, a))
-        rects.update(6*i+4, xf, yf, *_color(r, g, b, a))
-        rects.update(6*i+5, xf, yi, *_color(r, g, b, a))
+        rects.update(6*i+0, xi, yi, *icolor(r, g, b, a))
+        rects.update(6*i+1, xf, yf, *icolor(r, g, b, a))
+        rects.update(6*i+2, xi, yf, *icolor(r, g, b, a))
+        rects.update(6*i+3, xi, yi, *icolor(r, g, b, a))
+        rects.update(6*i+4, xf, yf, *icolor(r, g, b, a))
+        rects.update(6*i+5, xf, yi, *icolor(r, g, b, a))
     # order
     plot.vertex_buffers = [rects, lines, points]
 
@@ -212,6 +213,7 @@ def show(plot, w, h):
         text_h = 10.0/media.height()*view.h
         ## draw texts
         for (s, x, y, r, g, b, a) in plot.texts:
+            r, g, b, a = icolor(r, g, b, a)
             media.vector_text(s, x=x, y=y-text_h/4, h=text_h, aspect=aspect, r=r, g=g, b=b, a=a)
             media.line(x=x, y=y, w=text_h, h=0, r=r, g=g, b=b, a=a)
         if not plot.hide_axes:
