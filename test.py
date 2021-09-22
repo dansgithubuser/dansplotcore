@@ -1,6 +1,7 @@
 import dansplotcore as dpc
 
 import argparse
+import datetime
 import random
 import string
 
@@ -124,3 +125,19 @@ if args.case in ['5', 'rects', 'all']:
             plot.rect(x, y, x+1, y+1, *color)
             plot.text(f'{color}', x, y)
     plot.show()
+
+#===== datetime =====#
+if args.case in ['6', 'datetime', 'all']:
+    print('''plotting linear relation vs datetime
+        - x axis should show days since 2000 Jan 1
+        - x values are beginning of each month in 2000
+        - y values are days since 2000 Jan 1
+    ''')
+    dates = [datetime.datetime(2000, i+1, 1) for i in range(12)]
+    dpc.plot([
+        (
+            (i - dates[0]).total_seconds() / (24 * 60 * 60),
+            i,
+        )
+        for i in dates
+    ])

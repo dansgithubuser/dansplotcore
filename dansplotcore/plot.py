@@ -1,6 +1,7 @@
 from . import primitives
 from . import transforms
 
+import datetime
 import math
 
 class Plot:
@@ -21,31 +22,33 @@ class Plot:
         self.x_max = -math.inf
         self.y_min =  math.inf
         self.y_max = -math.inf
+        self.epochs = {}
         self.series = 0
         self.transform = transform or transforms.Default()
         self.hide_axes = hide_axes
         self.set_primitive(primitive or primitives.Point())
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
-        y = -y
+        x, y = self._to_screen(x, y)
         self.points.append([x, y, r, g, b, a])
         self._include(x, y)
 
     def line(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
-        yi = -yi
-        yf = -yf
+        xi, yi = self._to_screen(xi, yi)
+        xf, yf = self._to_screen(xf, yf)
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
 
     def rect(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
-        yi = -yi
-        yf = -yf
+        xi, yi = self._to_screen(xi, yi)
+        xf, yf = self._to_screen(xf, yf)
         self.rects.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
 
     def late_vertexor(self, vertexor, x, y):
+        x, y = self._to_screen(x, y)
         self.late_vertexors.append(vertexor)
         self._include(x, -y)
 
@@ -128,6 +131,15 @@ class Plot:
         self.x_max = max(x, self.x_max)
         self.y_min = min(y, self.y_min)
         self.y_max = max(y, self.y_max)
+
+    def _to_screen(self, x, y):
+        c = [x, y]
+        for i, v in enumerate(c):
+            if type(v) == datetime.datetime:
+                if i not in self.epochs:
+                    self.epochs[i] = v.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+                c[i] = (v - self.epochs[i]).total_seconds() / (24 * 60 * 60)
+        return c[0], -c[1]
 
 def plot(
     *args,
