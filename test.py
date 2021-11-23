@@ -88,7 +88,10 @@ if args.case in ['3', 'primitives', 'all']:
     )
     plot.plot(lambda x: x*x)
     plot.set_primitive(dpc.primitives.Cross())
-    plot.plot(lambda x: x)
+    for i in range(-50, 50):
+        x = i / 50
+        y = i / 50
+        plot.primitive(**plot.transform(x, y, i, plot.series))
     plot.show()
 
 #===== compound transform =====#
