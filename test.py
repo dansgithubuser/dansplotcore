@@ -144,3 +144,18 @@ if args.case in ['6', 'datetime', 'all']:
         )
         for i in dates
     ])
+
+#===== scatter plot with lines =====#
+if args.case in ['7', 'scatter-line', 'all']:
+    dpc.plot(
+        [
+            (0, 1),
+            (1, 1),
+            (2, 2),
+            (3, 3),
+            (4, 5),
+            (5, 8),
+            (6, 13),
+        ],
+        primitive=dpc.primitives.Line(),
+    )
