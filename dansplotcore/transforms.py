@@ -18,6 +18,7 @@ Color.b = Color(  0,   0, 255)
 Color.y = Color(255, 255,   0)
 Color.c = Color(  0, 255, 255)
 Color.m = Color(255,   0, 255)
+Color.o = Color(255, 128,   0)
 
 Color.all = [
     Color.w,
@@ -27,6 +28,15 @@ Color.all = [
     Color.y,
     Color.c,
     Color.m,
+    Color.o,
+    Color(128, 128, 128),
+    Color(128,   0,   0),
+    Color(  0, 128,   0),
+    Color(  0,   0, 128),
+    Color(128, 128,   0),
+    Color(  0, 128, 128),
+    Color(128,   0, 128),
+    Color(128,  64,   0),
 ]
 
 class Default:
