@@ -147,6 +147,10 @@ if args.case in ['6', 'datetime', 'all']:
 
 #===== scatter plot with lines =====#
 if args.case in ['7', 'scatter-line', 'all']:
+    print('''plotting line scatterplot
+        - x values are 0..6
+        - y values are fibonacci
+    ''')
     dpc.plot(
         [
             (0, 1),

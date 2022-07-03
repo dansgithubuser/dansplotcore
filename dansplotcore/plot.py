@@ -50,10 +50,9 @@ class Plot:
     def late_vertexor(self, vertexor, x, y):
         x, y = self._to_screen(x, y)
         self.late_vertexors.append(vertexor)
-        self._include(x, -y)
+        self._include(x, y)
 
     def text(self, s, x, y, r=255, g=255, b=255, a=255):
-        y = -y
         self.texts.append([s, x, y, r, g, b, a])
         self._include(x, y)
 
@@ -139,7 +138,7 @@ class Plot:
                 if i not in self.epochs:
                     self.epochs[i] = v.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
                 c[i] = (v - self.epochs[i]).total_seconds() / (24 * 60 * 60)
-        return c[0], -c[1]
+        return c[0], c[1]
 
 def plot(
     *args,
