@@ -166,7 +166,7 @@ def show(plot, w, h):
                 texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
                 texter.text('L', view.x, i, text_w * 2, text_h)
                 i += increment
-        plot.buffer_text.data = texter.vertices
+        plot.buffer_text.data = texter.data
         plot.buffer_text.prep('dynamic')
         plot.buffer_text.draws = [('lines', 0, len(plot.buffer_text.data))]
         plot.buffer_text.draw()

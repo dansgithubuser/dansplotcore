@@ -216,7 +216,7 @@ glyphs = {
 
 class Texter:
     def __init__(self):
-        self.vertices = [];
+        self.data = [];
 
     def text(self, s, x, y, w, h, r=1.0, g=1.0, b=1.0, a=1.0):
         x_i = x
@@ -235,7 +235,7 @@ class Texter:
                 self.glyph(glyph[i], x, y, w, h, r, g, b, a)
                 i += 1
             else:
-                self.vertices.extend([
+                self.data.extend([
                     x + glyph[i + 0] / 3 * w,
                     y + glyph[i + 1] / 2 * h,
                     r, g, b, a,

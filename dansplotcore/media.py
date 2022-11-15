@@ -78,6 +78,13 @@ class Buffer:
     def add(self, x, y, r, g, b, a):
         self.data.extend([x, y, r, g, b, a])
 
+    def add_vertices(self, vertices):
+        for v in self.vertices:
+            self.add(v)
+
+    def add_data(self, data):
+        self.data.extend(data)
+
     def prep(self, usage):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
         gl.glBufferData(
