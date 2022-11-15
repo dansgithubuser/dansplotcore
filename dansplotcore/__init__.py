@@ -1,2 +1,5 @@
+from . import primitives, transforms
 from .plot import Plot, plot
-from . import transforms
+
+p = primitives
+t = transforms

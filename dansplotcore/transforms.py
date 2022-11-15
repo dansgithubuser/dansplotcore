@@ -79,6 +79,9 @@ class Gradient:
 
 class Compound:
     def __init__(self, significant, *others):
+        'Each element of `others` should be a tuple `(transform, n)` where `n`'
+        ' specifies how many series to take before incrementing the series in '
+        'the next most significant transform.'
         self.significant = significant
         self.others = others
 
