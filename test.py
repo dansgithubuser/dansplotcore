@@ -170,6 +170,7 @@ if args.case in ['8', 'text-max-w-h', 'all']:
         - As have max_w=1, max_h=1
         - Bs have max_w=1
         - Cs have max_h=1
+        - D has scale=20
     ''')
     plot = dpc.Plot()
     plot.text('AA',  0, 10, max_w=1, max_h=1)
@@ -180,5 +181,5 @@ if args.case in ['8', 'text-max-w-h', 'all']:
     plot.text('BB', 11, 10, max_w=1)
     plot.text('CC',  0,  0, max_h=1)
     plot.text('CC',  0,  1, max_h=1)
-    plot.text('DD', 10,  0)
+    plot.text('DD', 10,  0, scale=20)
     plot.show()
