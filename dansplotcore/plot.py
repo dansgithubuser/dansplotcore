@@ -52,8 +52,8 @@ class Plot:
         self.late_vertexors.append(vertexor)
         self._include(x, y)
 
-    def text(self, s, x, y, r=255, g=255, b=255, a=255):
-        self.texts.append([s, x, y, r, g, b, a])
+    def text(self, s, x, y, r=255, g=255, b=255, a=255, max_w=math.inf, max_h=math.inf):
+        self.texts.append([s, x, y, r, g, b, a, max_w, max_h])
         self._include(x, y)
 
     def show(self, w=640, h=480):

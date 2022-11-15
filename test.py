@@ -163,3 +163,22 @@ if args.case in ['7', 'scatter-line', 'all']:
         ],
         primitive=dpc.primitives.Line(),
     )
+
+#===== text with max w and h =====#
+if args.case in ['8', 'text-max-w-h', 'all']:
+    print('''plotting texts:
+        - As have max_w=1, max_h=1
+        - Bs have max_w=1
+        - Cs have max_h=1
+    ''')
+    plot = dpc.Plot()
+    plot.text('AA',  0, 10, max_w=1, max_h=1)
+    plot.text('AA',  1, 10, max_w=1, max_h=1)
+    plot.text('AA',  0, 11, max_w=1, max_h=1)
+    plot.text('AA',  1, 11, max_w=1, max_h=1)
+    plot.text('BB', 10, 10, max_w=1)
+    plot.text('BB', 11, 10, max_w=1)
+    plot.text('CC',  0,  0, max_h=1)
+    plot.text('CC',  0,  1, max_h=1)
+    plot.text('DD', 10,  0)
+    plot.show()

@@ -132,14 +132,25 @@ def show(plot, w, h):
         plot.buffer.draw()
         margin_x = 5.0 / media.width()  * view.w
         margin_y = 5.0 / media.height() * view.h
-        text_w = 10.0/media.width()*view.w
-        text_h = 15.0/media.height()*view.h
+        text_w = 10.0 / media.width()  * view.w
+        text_h = 15.0 / media.height() * view.h
         # draw texts
         texter = media.Texter()
-        for (s, x, y, r, g, b, a) in plot.texts:
+        for (s, x, y, r, g, b, a, max_w, max_h) in plot.texts:
+            over = max(len(s) * text_w / max_w, text_h * 3 / 2 / max_h, 1)
             r, g, b, a = fcolor(r, g, b, a)
-            texter.text(s, x=x+margin_x, y=y+margin_y, w=text_w, h=text_h, r=r, g=g, b=b, a=a)
-            texter.text('L', x, y, text_w * 2, text_h, r=r, g=g, b=b, a=a)
+            texter.text(
+                s, x + margin_x / over, y + margin_y / over,
+                text_w / over,
+                text_h / over,
+                r, g, b, a,
+            )
+            texter.text(
+                'L', x, y,
+                text_w / over,
+                text_h / 2 / over,
+                r, g, b, a,
+            )
         if not plot.hide_axes:
             # draw x axis
             increment = 10 ** int(math.log10(view.w))
