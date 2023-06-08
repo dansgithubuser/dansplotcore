@@ -115,7 +115,7 @@ class Plot:
             elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = self.plot_scatter_xs
             elif _is_dim(args[0], 1) and _is_dim(args[1], 2): plot_func = self.plot_scatter_ys
         if not plot_func:
-            raise Exception('unknown plot type for argument types {}'.format([type(i) for i in args]))
+            raise Exception('unknown plot type for argument types {}'.format([_type_r(i) for i in args]))
         plot_func(*args, **kwargs)
         return self
 
@@ -157,7 +157,7 @@ def plot(
     ).plot(*args, **kwargs).show()
 
 def _type_r(v, max_depth=None, _depth=0):
-    if type(v) in [int, float]: return 'number'
+    if type(v).__name__ in ['int', 'float', 'float64']: return 'number'
     if max_depth != None and _depth == max_depth:
         return str(type(v))
     try:
