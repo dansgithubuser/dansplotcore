@@ -30,13 +30,17 @@ def random_color_for_position(x, y):
 
 #===== general =====#
 if args.case in ['1', 'general', 'all']:
-    print('plotting random dots, lines, text, in (x=512..767, y=768..1023), reddish on right, greenish on top')
+    print('''plotting random dots, lines, text, pluses:
+        - in (x=512..767, y=768..1023)
+        - reddish on right
+        - greenish on top\
+    ''')
     plot = dpc.Plot('test')
 
     for i in range(10000):
         x, y = random_position()
         r, g, b, a = random_color_for_position(x, y)
-        choice = random.choice(['point', 'line', 'text'])
+        choice = random.choice(['point', 'line', 'text', 'plus'])
         if choice == 'point':
             plot.point(x, y, r, g, b, a)
         elif choice == 'line':
@@ -45,6 +49,8 @@ if args.case in ['1', 'general', 'all']:
         elif choice == 'text' and not random.randint(0, 100):
             s = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(1, 8)))
             plot.text(s, x, y, r, g, b, a)
+        elif choice == 'plus':
+            plot.late_vertexor(dpc.p.Plus().vertexor, x, y, r, g, b, a)
 
     plot.show()
 

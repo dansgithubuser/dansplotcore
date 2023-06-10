@@ -47,9 +47,9 @@ class Plot:
         self._include(xi, yi)
         self._include(xf, yf)
 
-    def late_vertexor(self, vertexor, x, y):
+    def late_vertexor(self, vertexor, x, y, r=255, g=255, b=255, a=255):
         x, y = self._to_screen(x, y)
-        self.late_vertexors.append(vertexor)
+        self.late_vertexors.append([vertexor, x, y, r, g, b, a])
         self._include(x, y)
 
     def text(self, s, x, y, r=255, g=255, b=255, a=255, max_w=math.inf, max_h=math.inf, scale=10):

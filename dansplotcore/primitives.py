@@ -15,26 +15,28 @@ class Point(_Base):
 class Plus(_Base):
     def __init__(self, size=5):
         self.size = size
-
-    def __call__(self, x, y, r=255, g=255, b=255, a=255):
-        def vertexor(view, w, h):
+        def vertexor(plot, view, w, h, x, y, r, g, b, a):
             size_x = self.size / w * view.w
             size_y = self.size / h * view.h
-            self.plot.line(x-size_x, y, x+size_x, y, r, g, b, a)
-            self.plot.line(x, y-size_y, x, y+size_y, r, g, b, a)
-        self.plot.late_vertexor(vertexor, x, y)
+            plot.line(x-size_x, y, x+size_x, y, r, g, b, a)
+            plot.line(x, y-size_y, x, y+size_y, r, g, b, a)
+        self.vertexor = vertexor
+
+    def __call__(self, x, y, r=255, g=255, b=255, a=255):
+        self.plot.late_vertexor(self.vertexor, x, y, r, g, b, a)
 
 class Cross(_Base):
     def __init__(self, size=5):
         self.size = size
-
-    def __call__(self, x, y, r=255, g=255, b=255, a=255):
-        def vertexor(view, w, h):
+        def vertexor(plot, view, w, h, x, y, r, g, b, a):
             size_x = self.size / w * view.w
             size_y = self.size / h * view.h
-            self.plot.line(x-size_x, y-size_y, x+size_x, y+size_y, r, g, b, a)
-            self.plot.line(x-size_x, y+size_y, x+size_x, y-size_y, r, g, b, a)
-        self.plot.late_vertexor(vertexor, x, y)
+            plot.line(x-size_x, y-size_y, x+size_x, y+size_y, r, g, b, a)
+            plot.line(x-size_x, y+size_y, x+size_x, y-size_y, r, g, b, a)
+        self.vertexor = vertexor
+
+    def __call__(self, x, y, r=255, g=255, b=255, a=255):
+        self.plot.late_vertexor(self.vertexor, x, y, r, g, b, a)
 
 class Line(_Base):
     def __init__(self):

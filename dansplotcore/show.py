@@ -29,8 +29,8 @@ def construct(plot, view, w, h):
         else:
             plot.original_points = copy.copy(plot.points)
             plot.original_lines = copy.copy(plot.lines)
-        for i in plot.late_vertexors:
-            i(view, w, h)
+        for vertexor, x, y, r, g, b, a in plot.late_vertexors:
+            vertexor(plot, view, w, h, x, y, r, g, b, a)
     # points
     for x, y, r, g, b, a in plot.points:
         plot.buffer.add(x, y, *fcolor(r, g, b, a))
