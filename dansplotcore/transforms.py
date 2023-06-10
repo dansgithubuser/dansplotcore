@@ -4,6 +4,9 @@ class Color:
         self.g = g
         self.b = b
 
+    def tuple(self):
+        return self.r, self.g, self.b
+
     def mix(self, other, amount):
         return Color(
             int((1-amount) * self.r + amount * other.r),
