@@ -11,6 +11,7 @@ class Plot:
         transform=None,
         hide_axes=False,
         primitive=None,
+        datetime_unit=1,
     ):
         self.title = title
         self.points = []
@@ -27,6 +28,7 @@ class Plot:
         self.transform = transform or transforms.Default()
         self.hide_axes = hide_axes
         self.set_primitive(primitive or primitives.Point())
+        self.datetime_unit = datetime_unit
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
         x, y = self._to_screen(x, y)
@@ -137,8 +139,8 @@ class Plot:
         for i, v in enumerate(c):
             if type(v) == datetime.datetime:
                 if i not in self.epochs:
-                    self.epochs[i] = v.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-                c[i] = (v - self.epochs[i]).total_seconds() / (24 * 60 * 60)
+                    self.epochs[i] = v
+                c[i] = (v - self.epochs[i]).total_seconds() / self.datetime_unit
         return c[0], c[1]
 
 def plot(
