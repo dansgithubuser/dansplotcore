@@ -164,7 +164,16 @@ def show(plot, w, h):
             while i < view.x + view.w:
                 s = '{:.5}'.format(i)
                 if view.x + view.w - i > increment:
-                    texter.text(s, x=i+margin_x, y=view.y+margin_y, w=text_w, h=text_h)
+                    if i == 0 and plot.epochs.get(0) != None:
+                        texter.text(
+                            plot.epochs[0].isoformat('\n'),
+                            x=i + margin_x,
+                            y=view.y + margin_y + text_h,
+                            w=text_w / 2,
+                            h=text_h / 2,
+                        )
+                    else:
+                        texter.text(s, x=i+margin_x, y=view.y+margin_y, w=text_w, h=text_h)
                     texter.text('L', i, view.y, text_w * 2, text_h)
                 i += increment
             # draw y axis
@@ -176,7 +185,16 @@ def show(plot, w, h):
             i = (view.y + text_h + 2*margin_y) // increment * increment + increment
             while i < view.y + view.h - (text_h + 2*margin_y):
                 s = '{:.5}'.format(i)
-                texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
+                if i == 0 and plot.epochs.get(1) != None:
+                    texter.text(
+                        plot.epochs[1].isoformat('\n'),
+                        x=view.x + margin_x,
+                        y=i + margin_y + text_h,
+                        w=text_w / 2,
+                        h=text_h / 2,
+                    )
+                else:
+                    texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
                 texter.text('L', view.x, i, text_w * 2, text_h)
                 i += increment
         plot.buffer_text.data = texter.data

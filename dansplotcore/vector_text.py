@@ -225,7 +225,7 @@ class Texter:
             x += w
             if c == '\n':
                 x = x_i
-                y += h * 2
+                y -= h * 2
 
     def glyph(self, c, x, y, w, h, r, g, b, a):
         glyph = glyphs.get(c, glyphs[None])
