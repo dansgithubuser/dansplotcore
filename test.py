@@ -190,3 +190,18 @@ if args.case in ['8', 'text-max-w-h', 'all']:
     plot.text('CC',  0,  1, max_h=1)
     plot.text('DD', 10,  0, scale=20)
     plot.show()
+
+#===== 2d =====#
+if args.case in ['9', '2d', 'all']:
+    print('''plotting grid:
+        - top left is bright
+        - right is dimmer
+        - bottom is dimmest
+    ''')
+    import numpy as np
+    dpc.plot(np.array([
+        [3, 2, 1, 0],
+        [5, 4, 3, 2],
+        [7, 6, 5, 4],
+        [9, 8, 7, 6],
+    ]))

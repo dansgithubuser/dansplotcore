@@ -103,6 +103,30 @@ class Plot:
             self.primitive(**self.transform(x_curr, y_curr, i, self.series))
         self.next_series()
 
+    def plot_2d(self, array):
+        v_min = math.inf
+        v_max = -math.inf
+        for row in array:
+            v_min = min(v_min, min(row))
+            v_max = max(v_max, max(row))
+        v_rng = v_max - v_min
+        if v_rng == 0: return
+        i = 0
+        for y, row in enumerate(array):
+            for x, v in enumerate(row):
+                kwargs = {'a': float((v - v_min) / v_rng)}
+                a = self.transform(x, y, i, self.series)
+                kwargs['xi'] = a['x']
+                kwargs['yi'] = a['y']
+                if 'r' in a: kwargs['r'] = a['r']
+                if 'g' in a: kwargs['g'] = a['g']
+                if 'b' in a: kwargs['b'] = a['b']
+                b = self.transform(x+1, y+1, i, self.series)
+                kwargs['xf'] = b['x']
+                kwargs['yf'] = b['y']
+                self.rect(**kwargs)
+        self.next_series()
+
     def plot(self, *args, **kwargs):
         plot_func = None
         if len(args) == 1:
@@ -112,6 +136,7 @@ class Plot:
             elif type(args[0]) == dict: plot_func = self.plot_dict
             elif _type_r(args[0]) == _type_r([{}]): plot_func = self.plot_dicts
             elif callable(args[0]): plot_func = self.plot_f
+            elif type(args[0]).__name__ == 'ndarray' and len(args[0].shape) == 2: plot_func = self.plot_2d
         elif len(args) == 2:
             if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = self.plot_scatter
             elif _is_dim(args[0], 2) and _is_dim(args[1], 1): plot_func = self.plot_scatter_xs
