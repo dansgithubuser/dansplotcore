@@ -63,47 +63,47 @@ class Plot:
         from .show import show
         show(self, w, h)
 
-    def plot_list(self, l):
+    def plot_list(self, l, **kwargs):
         for i, v in enumerate(l):
             self.primitive(**self.transform(i, v, i, self.series))
-        self.next_series()
+        self._plot_common(**kwargs)
 
-    def plot_lists(self, ls):
-        for l in ls: self.plot_list(l)
+    def plot_lists(self, ls, **kwargs):
+        for l in ls: self.plot_list(l, **kwargs)
 
-    def plot_scatter(self, x, y):
+    def plot_scatter(self, x, y, **kwargs):
         for i in range(min(len(x), len(y))):
             self.primitive(**self.transform(x[i], y[i], i, self.series))
-        self.next_series()
+        self._plot_common(**kwargs)
 
-    def plot_scatter_pairs(self, pairs):
+    def plot_scatter_pairs(self, pairs, **kwargs):
         for i, pair in enumerate(pairs):
             self.primitive(**self.transform(pair[0], pair[1], i, self.series))
-        self.next_series()
+        self._plot_common(**kwargs)
 
-    def plot_scatter_xs(self, xs, y):
-        for x in xs: self.plot_scatter(x, y)
+    def plot_scatter_xs(self, xs, y, **kwargs):
+        for x in xs: self.plot_scatter(x, y, **kwargs)
 
-    def plot_scatter_ys(self, x, ys):
-        for y in ys: self.plot_scatter(x, y)
+    def plot_scatter_ys(self, x, ys, **kwargs):
+        for y in ys: self.plot_scatter(x, y, **kwargs)
 
-    def plot_dict(self, d):
+    def plot_dict(self, d, **kwargs):
         for i, (x, y) in enumerate(d.items()):
             self.primitive(**self.transform(x, y, i, self.series))
-        self.next_series()
+        self._plot_common(**kwargs)
 
-    def plot_dicts(self, ds):
-        for d in ds: self.plot_dict(d)
+    def plot_dicts(self, ds, **kwargs):
+        for d in ds: self.plot_dict(d, **kwargs)
 
-    def plot_f(self, f, x=(-1, 1), steps=100):
+    def plot_f(self, f, x=(-1, 1), steps=100, **kwargs):
         args_prev = None
         for i in range(steps):
             x_curr = x[0] + (x[1]-x[0]) * i/(steps-1)
             y_curr = f(x_curr)
             self.primitive(**self.transform(x_curr, y_curr, i, self.series))
-        self.next_series()
+        self._plot_common(**kwargs)
 
-    def plot_2d(self, array):
+    def plot_2d(self, array, **kwargs):
         v_min = math.inf
         v_max = -math.inf
         for row in array:
@@ -125,7 +125,7 @@ class Plot:
                 kwargs['xf'] = b['x']
                 kwargs['yf'] = b['y']
                 self.rect(**kwargs)
-        self.next_series()
+        self._plot_common(**kwargs)
 
     def plot(self, *args, **kwargs):
         plot_func = None
@@ -167,6 +167,23 @@ class Plot:
                     self.epochs[i] = v
                 c[i] = (v - self.epochs[i]).total_seconds() / self.datetime_unit
         return c[0], c[1]
+
+    def _plot_common(
+        self,
+        next_series=True,
+        legend=None,
+        legend_displacement=(0, -1),
+        legend_offset=(0, -1),
+        **kwargs,
+    ):
+        if legend:
+            h = (self.y_max - self.y_min) / 24
+            kwargs = self.transform(0, 0, 0, self.series)
+            kwargs['x'] += legend_displacement[0] * self.series + legend_offset[0]
+            kwargs['y'] += legend_displacement[1] * self.series + legend_offset[1]
+            self.text(legend, max_h=h, **kwargs)
+        if next_series:
+            self.next_series()
 
 def plot(
     *args,

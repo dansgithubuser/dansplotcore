@@ -2,6 +2,7 @@ import dansplotcore as dpc
 
 import argparse
 import datetime
+import math
 import random
 import string
 
@@ -205,3 +206,18 @@ if args.case in ['9', '2d', 'all']:
         [7, 6, 5, 4],
         [9, 8, 7, 6],
     ]))
+
+#===== legend =====#
+if args.case in ['10', 'legend', 'all']:
+    print('plotting 3 functions with legend, colors')
+    plot = dpc.Plot()
+    plot.plot(lambda i: i, legend='x')
+    plot.plot(lambda i: 2 * i, legend='2x')
+    plot.plot(lambda i: math.sin(i), legend='sin(x)')
+    plot.show()
+    print('plotting 3 functions with legend, grid')
+    plot = dpc.Plot(transform=dpc.t.Grid(2, 2, 2))
+    plot.plot(lambda i: i, legend='x', legend_displacement=(0, 0))
+    plot.plot(lambda i: 2 * i, legend='2x', legend_displacement=(0, 0))
+    plot.plot(lambda i: math.sin(i), legend='sin(x)', legend_displacement=(0, 0))
+    plot.show()
