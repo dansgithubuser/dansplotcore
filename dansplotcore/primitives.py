@@ -1,3 +1,4 @@
+import bisect
 import weakref
 
 class _Base:
@@ -55,8 +56,21 @@ class Line(_Base):
         self.y = None
 
 class Bar(_Base):
+    def __init__(self):
+        def vertexor(plot, view, w, h, x, y, r, g, b, a):
+            self.plot.rect(x, 0, x + self.w, y, r, g, b, a)
+        self.vertexor = vertexor
+        self.x = []
+        self.w = None
+
     def __call__(self, x, y, r=255, g=255, b=255, a=255):
-        self.plot.rect(x, 0, x + 1, y, r, g, b, a)
+        self.plot.late_vertexor(self.vertexor, x, y, r, g, b, a)
+        bisect.insort(self.x, x)
+        if len(self.x) >= 2:
+            self.w = min(b - a for b, a in zip(self.x, self.x[1:]))
+
+    def reset(self):
+        self.x = []
 
 class Compound(_Base):
     def __init__(self, *primitives):
