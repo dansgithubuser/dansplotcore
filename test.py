@@ -221,3 +221,9 @@ if args.case in ['10', 'legend', 'all']:
     plot.plot(lambda i: 2 * i, legend='2x', legend_displacement=(0, 0))
     plot.plot(lambda i: math.sin(i), legend='sin(x)', legend_displacement=(0, 0))
     plot.show()
+
+#===== histogram =====#
+if args.case in ['11', 'histogram', 'all']:
+    print('plotting histogram of a normal distribution')
+    x = [random.gauss() for i in range(400)]
+    dpc.plot(dpc.proc.bucket(x), primitive=dpc.p.Bar())

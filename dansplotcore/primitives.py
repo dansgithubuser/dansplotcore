@@ -54,6 +54,10 @@ class Line(_Base):
         self.x = None
         self.y = None
 
+class Bar(_Base):
+    def __call__(self, x, y, r=255, g=255, b=255, a=255):
+        self.plot.rect(x, 0, x + 1, y, r, g, b, a)
+
 class Compound(_Base):
     def __init__(self, *primitives):
         self.primitives = primitives
