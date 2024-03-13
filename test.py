@@ -227,3 +227,8 @@ if args.case in ['11', 'histogram', 'all']:
     print('plotting histogram of a normal distribution')
     x = [random.gauss() for i in range(400)]
     dpc.plot(dpc.proc.bucket(x), primitive=dpc.p.Bar())
+
+#===== empty =====#
+if args.case in ['12', 'empty', 'all']:
+    print('plotting empty plot')
+    dpc.plot([])
