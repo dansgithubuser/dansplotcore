@@ -75,8 +75,17 @@ def show(plot, w, h):
     def reset():
         view.x = plot.x_min
         view.y = plot.y_min
-        view.w = plot.x_max-plot.x_min
-        view.h = plot.y_max-plot.y_min
+        view.w = plot.x_max - plot.x_min
+        view.h = plot.y_max - plot.y_min
+        if view.x == math.inf:
+            view.x = 0
+            view.y = 0
+            view.w = 1
+            view.h = 1
+        if view.w == 0:
+            view.w = 1
+        if view.h == 0:
+            view.h = 1
         media.view_set(*view.tuple())
     def move(view, dx, dy):
         view.x -= dx*view.w/media.width()

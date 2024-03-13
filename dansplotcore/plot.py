@@ -130,7 +130,8 @@ class Plot:
     def plot(self, *args, **kwargs):
         plot_func = None
         if len(args) == 1:
-            if   _is_dim(args[0], 1): plot_func = self.plot_list
+            if args[0] == []: return self
+            elif _is_dim(args[0], 1): plot_func = self.plot_list
             elif _is_dim(args[0], 2): plot_func = self.plot_lists
             elif _type_r(args[0], 1) == _type_r([()]): plot_func = self.plot_scatter_pairs
             elif type(args[0]) == dict: plot_func = self.plot_dict
