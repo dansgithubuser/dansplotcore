@@ -127,11 +127,15 @@ class Plot:
                 self.rect(**kwargs)
         self._plot_common(**kwargs)
 
+    def plot_empty(self, *args, **kwargs):
+        self._plot_common(**kwargs)
+
     def plot(self, *args, **kwargs):
         plot_func = None
-        if len(args) == 1:
-            if args[0] == []: return self
-            elif _is_dim(args[0], 1): plot_func = self.plot_list
+        if len(args) >= 1 and _is_empty(args[0]):
+            plot_func = self.plot_empty
+        elif len(args) == 1:
+            if   _is_dim(args[0], 1): plot_func = self.plot_list
             elif _is_dim(args[0], 2): plot_func = self.plot_lists
             elif _type_r(args[0], 1) == _type_r([()]): plot_func = self.plot_scatter_pairs
             elif type(args[0]) == dict: plot_func = self.plot_dict
@@ -215,3 +219,9 @@ def _is_dim(v, dim):
     u = 0
     for i in range(dim): u = [u]
     return _type_r(v, dim) == _type_r(u)
+
+def _is_empty(v):
+    try:
+        return len(v) == 0
+    except:
+        return False
