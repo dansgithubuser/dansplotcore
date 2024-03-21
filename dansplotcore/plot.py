@@ -182,11 +182,10 @@ class Plot:
         **kwargs,
     ):
         if legend:
-            h = (self.y_max - self.y_min) / 24
             kwargs = self.transform(0, 0, 0, self.series)
             kwargs['x'] += legend_displacement[0] * self.series + legend_offset[0]
             kwargs['y'] += legend_displacement[1] * self.series + legend_offset[1]
-            self.text(legend, max_h=h, **kwargs)
+            self.text(legend, max_h=abs(legend_displacement[1]), **kwargs)
         if next_series:
             self.next_series()
 
