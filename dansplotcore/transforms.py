@@ -95,3 +95,8 @@ class Compound:
             series //= mod
         result.update(self.significant(result['x'], result['y'], i, series))
         return result
+
+    def series_insignificant(self, series):
+        if len(self.others) == 0:
+            return series
+        return series % self.others[-1][1]

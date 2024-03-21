@@ -215,11 +215,11 @@ if args.case in ['10', 'legend', 'all']:
     plot.plot(lambda i: 2 * i, legend='2x')
     plot.plot(lambda i: math.sin(i), legend='sin(x)')
     plot.show()
-    print('plotting 3 functions with legend, grid')
-    plot = dpc.Plot(transform=dpc.t.Grid(2, 2, 2))
-    plot.plot(lambda i: i, legend='x', legend_displacement=(0, 0))
-    plot.plot(lambda i: 2 * i, legend='2x', legend_displacement=(0, 0))
-    plot.plot(lambda i: math.sin(i), legend='sin(x)', legend_displacement=(0, 0))
+    print('plotting 3 functions with legend, 2 per cell')
+    plot = dpc.Plot(transform=dpc.t.Compound(dpc.t.Grid(2, 2, 2), (dpc.t.Default(), 2)))
+    plot.plot(lambda i: i, legend='x')
+    plot.plot(lambda i: 2 * i, legend='2x')
+    plot.plot(lambda i: math.sin(i), legend='sin(x)')
     plot.show()
 
 #===== histogram =====#

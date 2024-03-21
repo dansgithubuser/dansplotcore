@@ -8,10 +8,13 @@ class Plot:
     def __init__(
         self,
         title='plot',
+        *,
         transform=None,
         hide_axes=False,
         primitive=None,
         datetime_unit=1,
+        legend_displacement=(0, -1),
+        legend_offset=(0, -1),
     ):
         self.title = title
         self.points = []
@@ -29,6 +32,8 @@ class Plot:
         self.hide_axes = hide_axes
         self.set_primitive(primitive or primitives.Point())
         self.datetime_unit = datetime_unit
+        self.legend_displacement = legend_displacement
+        self.legend_offset = legend_offset
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
         x, y = self._to_screen(x, y)
@@ -177,15 +182,17 @@ class Plot:
         self,
         next_series=True,
         legend=None,
-        legend_displacement=(0, -1),
-        legend_offset=(0, -1),
         **kwargs,
     ):
         if legend:
             kwargs = self.transform(0, 0, 0, self.series)
-            kwargs['x'] += legend_displacement[0] * self.series + legend_offset[0]
-            kwargs['y'] += legend_displacement[1] * self.series + legend_offset[1]
-            self.text(legend, max_h=abs(legend_displacement[1]), **kwargs)
+            if hasattr(self.transform, 'series_insignificant'):
+                series = self.transform.series_insignificant(self.series)
+            else:
+                series = self.series
+            kwargs['x'] += self.legend_displacement[0] * series + self.legend_offset[0]
+            kwargs['y'] += self.legend_displacement[1] * series + self.legend_offset[1]
+            self.text(legend, max_h=abs(self.legend_displacement[1]) or 1, **kwargs)
         if next_series:
             self.next_series()
 
@@ -199,9 +206,9 @@ def plot(
 ):
     Plot(
         title,
-        transform,
-        hide_axes,
-        primitive,
+        transform=transform,
+        hide_axes=hide_axes,
+        primitive=primitive,
     ).plot(*args, **kwargs).show()
 
 def _type_r(v, max_depth=None, _depth=0):
