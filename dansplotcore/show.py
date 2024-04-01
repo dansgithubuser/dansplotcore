@@ -201,7 +201,7 @@ def show(plot, w, h):
             text_w = 10 / media.width()  * view.w
             text_h = 15 / media.height() * view.h
             # draw x axis
-            increment = 10 ** int(math.log10(view.w))
+            increment = 10 ** math.floor(math.log10(view.w))
             if view.w / increment < 2:
                 increment /= 5
             elif view.w / increment < 5:
@@ -223,7 +223,7 @@ def show(plot, w, h):
                     texter.text('L', i, view.y, text_w * 2, text_h)
                 i += increment
             # draw y axis
-            increment = 10 ** int(math.log10(view.h))
+            increment = 10 ** math.floor(math.log10(view.h))
             if view.h / increment < 2:
                 increment /= 5
             elif view.h / increment < 5:
