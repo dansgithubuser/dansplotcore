@@ -22,37 +22,35 @@ def fcolor(r, g, b, a):
 def translate_x_date(plot, list_, component):
     for i in list_:
         x = i[component]
-        x = (x - plot.x_min).total_seconds() / plot.datetime_unit
+        x = (x - plot.epochs['x']['min']).total_seconds() / plot.datetime_unit
         i[component] = x
 
 def translate_y_date(plot, list_, component):
     for i in list_:
         y = i[component]
-        y = (y - plot.y_min).total_seconds() / plot.datetime_unit
+        y = (y - plot.epochs['y']['min']).total_seconds() / plot.datetime_unit
         i[component] = y
 
 def translate_dates(plot):
-    if type(plot.x_min) != datetime.datetime and type(plot.y_min) != datetime.datetime: return
-    if type(plot.x_min) == datetime.datetime:
+    if not plot.epochs: return
+    if 'x' in plot.epochs:
         translate_x_date(plot, plot.late_vertexors, 1)
         translate_x_date(plot, plot.points, 0)
         translate_x_date(plot, plot.lines, 0)
         translate_x_date(plot, plot.lines, 2)
         translate_x_date(plot, plot.rects, 0)
         translate_x_date(plot, plot.rects, 2)
-        plot.epochs[0] = plot.x_min
-        plot.x_max = (plot.x_max - plot.x_min).total_seconds() / plot.datetime_unit
-        plot.x_min = 0
-    if type(plot.y_min) == datetime.datetime:
+        plot.x_max = max(plot.x_max, (plot.epochs['x']['max'] - plot.epochs['x']['min']).total_seconds() / plot.datetime_unit)
+        plot.x_min = min(plot.x_min, 0)
+    if 'y' in plot.epochs:
         translate_y_date(plot, plot.late_vertexors, 2)
         translate_y_date(plot, plot.points, 1)
         translate_y_date(plot, plot.lines, 1)
         translate_y_date(plot, plot.lines, 3)
         translate_y_date(plot, plot.rects, 1)
         translate_y_date(plot, plot.rects, 3)
-        plot.epochs[1] = plot.y_min
-        plot.y_max = (plot.y_max - plot.y_min).total_seconds() / plot.datetime_unit
-        plot.y_min = 0
+        plot.y_max = max(plot.y_max, (plot.epochs['y']['max'] - plot.epochs['y']['min']).total_seconds() / plot.datetime_unit)
+        plot.y_min = min(plot.y_min, 0)
 
 def construct(plot, view, w, h):
     plot.buffer = media.Buffer()
@@ -210,9 +208,9 @@ def show(plot, w, h):
             while i < view.x + view.w:
                 s = '{:.5}'.format(i)
                 if view.x + view.w - i > increment:
-                    if i == 0 and plot.epochs.get(0) != None:
+                    if i == 0 and plot.epochs.get('x') != None:
                         texter.text(
-                            plot.epochs[0].isoformat('\n'),
+                            plot.epochs['x']['min'].isoformat('\n'),
                             x=i + margin_x,
                             y=view.y + margin_y + text_h,
                             w=text_w / 2,
@@ -231,9 +229,9 @@ def show(plot, w, h):
             i = (view.y + text_h + 2*margin_y) // increment * increment + increment
             while i < view.y + view.h - (text_h + 2*margin_y):
                 s = '{:.5}'.format(i)
-                if i == 0 and plot.epochs.get(1) != None:
+                if i == 0 and plot.epochs.get('y') != None:
                     texter.text(
-                        plot.epochs[1].isoformat('\n'),
+                        plot.epochs['y']['min'].isoformat('\n'),
                         x=view.x + margin_x,
                         y=i + margin_y + text_h,
                         w=text_w / 2,

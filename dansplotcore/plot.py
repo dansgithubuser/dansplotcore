@@ -158,16 +158,24 @@ class Plot:
         self.primitive = primitive.set_plot(self)
 
     def _include(self, x, y):
-        if type(x) == datetime.datetime and type(self.x_min) != datetime.datetime:
-            self.x_min = x
-            self.x_max = x
-        if type(y) == datetime.datetime and type(self.y_min) != datetime.datetime:
-            self.y_min = y
-            self.y_max = y
-        self.x_min = min(x, self.x_min)
-        self.x_max = max(x, self.x_max)
-        self.y_min = min(y, self.y_min)
-        self.y_max = max(y, self.y_max)
+        if type(x) == datetime.datetime:
+            if 'x' in self.epochs:
+                self.epochs['x']['min'] = min(x, self.epochs['x']['min'])
+                self.epochs['x']['max'] = max(x, self.epochs['x']['max'])
+            else:
+                self.epochs['x'] = {'min': x, 'max': x}
+        else:
+            self.x_min = min(x, self.x_min)
+            self.x_max = max(x, self.x_max)
+        if type(y) == datetime.datetime:
+            if 'y' in self.epochs:
+                self.epochs['y']['min'] = min(y, self.epochs['y']['min'])
+                self.epochs['y']['max'] = max(y, self.epochs['y']['max'])
+            else:
+                self.epochs['y'] = {'min': y, 'max': y}
+        else:
+            self.y_min = min(y, self.y_min)
+            self.y_max = max(y, self.y_max)
 
     def _plot_common(
         self,
