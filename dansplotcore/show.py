@@ -212,9 +212,9 @@ def show(plot, w, h):
                         texter.text(
                             plot.epochs['x']['min'].isoformat('\n'),
                             x=i + margin_x,
-                            y=view.y + margin_y + text_h,
-                            w=text_w / 2,
-                            h=text_h / 2,
+                            y=view.y + margin_y + 1.33 * text_h,
+                            w=text_w * 0.66,
+                            h=text_h * 0.66,
                         )
                     else:
                         texter.text(s, x=i+margin_x, y=view.y+margin_y, w=text_w, h=text_h)
@@ -233,9 +233,9 @@ def show(plot, w, h):
                     texter.text(
                         plot.epochs['y']['min'].isoformat('\n'),
                         x=view.x + margin_x,
-                        y=i + margin_y + text_h,
-                        w=text_w / 2,
-                        h=text_h / 2,
+                        y=i + margin_y + 1.33 * text_h,
+                        w=text_w * 0.66,
+                        h=text_h * 0.66,
                     )
                 else:
                     texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
