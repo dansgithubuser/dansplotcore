@@ -1,6 +1,7 @@
 from . import media
 
 import copy
+import datetime
 import math
 
 class View:
@@ -17,6 +18,41 @@ def fcolor(r, g, b, a):
         i if type(i) == float else i/255
         for i in [r, g, b, a]
     ]
+
+def translate_x_date(plot, list_, component):
+    for i in list_:
+        x = i[component]
+        x = (x - plot.x_min).total_seconds() / plot.datetime_unit
+        i[component] = x
+
+def translate_y_date(plot, list_, component):
+    for i in list_:
+        y = i[component]
+        y = (y - plot.y_min).total_seconds() / plot.datetime_unit
+        i[component] = y
+
+def translate_dates(plot):
+    if type(plot.x_min) != datetime.datetime and type(plot.y_min) != datetime.datetime: return
+    if type(plot.x_min) == datetime.datetime:
+        translate_x_date(plot, plot.late_vertexors, 1)
+        translate_x_date(plot, plot.points, 0)
+        translate_x_date(plot, plot.lines, 0)
+        translate_x_date(plot, plot.lines, 2)
+        translate_x_date(plot, plot.rects, 0)
+        translate_x_date(plot, plot.rects, 2)
+        plot.epochs[0] = plot.x_min
+        plot.x_max = (plot.x_max - plot.x_min).total_seconds() / plot.datetime_unit
+        plot.x_min = 0
+    if type(plot.y_min) == datetime.datetime:
+        translate_y_date(plot, plot.late_vertexors, 2)
+        translate_y_date(plot, plot.points, 1)
+        translate_y_date(plot, plot.lines, 1)
+        translate_y_date(plot, plot.lines, 3)
+        translate_y_date(plot, plot.rects, 1)
+        translate_y_date(plot, plot.rects, 3)
+        plot.epochs[1] = plot.y_min
+        plot.y_max = (plot.y_max - plot.y_min).total_seconds() / plot.datetime_unit
+        plot.y_min = 0
 
 def construct(plot, view, w, h):
     plot.buffer = media.Buffer()
@@ -59,6 +95,7 @@ def construct(plot, view, w, h):
 
 def show(plot, w, h):
     media.init(w, h, title=plot.title)
+    translate_dates(plot)
     if plot.x_min == plot.x_max:
         plot.x_min -= 1
         plot.x_max += 1

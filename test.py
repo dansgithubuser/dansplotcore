@@ -138,19 +138,18 @@ if args.case in ['5', 'rects', 'all']:
 
 #===== datetime =====#
 if args.case in ['6', 'datetime', 'all']:
-    print('''plotting linear relation vs datetime
-        - x axis should show days since 2000 Jan 1
-        - x values are beginning of each month in 2000
-        - y values are days since 2000 Jan 1
+    print('''plotting linear datetime vs number
+        - a point for the start of each month in 2000
+        - y values are dates, axes show days since 2000 Jan 1
+        - x values are numbers, days since 2000 Jan 1
     ''')
-    dates = [datetime.datetime(2000, i+1, 1) for i in range(12)]
-    dpc.plot([
-        (
-            (i - dates[0]).total_seconds() / (24 * 60 * 60),
-            i,
-        )
-        for i in dates
-    ])
+    dates = []
+    for i in range(12):
+        y = datetime.datetime(2000, i+1, 1)
+        x = (y - datetime.datetime(2000, 1, 1)).total_seconds() / (24 * 60 * 60)
+        dates.append((x, y))
+    dates.reverse()
+    dpc.Plot(datetime_unit=24*60*60).plot(dates).show()
 
 #===== scatter plot with lines =====#
 if args.case in ['7', 'scatter-line', 'all']:

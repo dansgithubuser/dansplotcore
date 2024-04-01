@@ -36,26 +36,20 @@ class Plot:
         self.legend_offset = legend_offset
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
-        x, y = self._to_screen(x, y)
         self.points.append([x, y, r, g, b, a])
         self._include(x, y)
 
     def line(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
-        xi, yi = self._to_screen(xi, yi)
-        xf, yf = self._to_screen(xf, yf)
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
 
     def rect(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
-        xi, yi = self._to_screen(xi, yi)
-        xf, yf = self._to_screen(xf, yf)
         self.rects.append([xi, yi, xf, yf, r, g, b, a])
         self._include(xi, yi)
         self._include(xf, yf)
 
     def late_vertexor(self, vertexor, x, y, r=255, g=255, b=255, a=255):
-        x, y = self._to_screen(x, y)
         self.late_vertexors.append([vertexor, x, y, r, g, b, a])
         self._include(x, y)
 
@@ -164,19 +158,16 @@ class Plot:
         self.primitive = primitive.set_plot(self)
 
     def _include(self, x, y):
+        if type(x) == datetime.datetime and type(self.x_min) != datetime.datetime:
+            self.x_min = x
+            self.x_max = x
+        if type(y) == datetime.datetime and type(self.y_min) != datetime.datetime:
+            self.y_min = y
+            self.y_max = y
         self.x_min = min(x, self.x_min)
         self.x_max = max(x, self.x_max)
         self.y_min = min(y, self.y_min)
         self.y_max = max(y, self.y_max)
-
-    def _to_screen(self, x, y):
-        c = [x, y]
-        for i, v in enumerate(c):
-            if type(v) == datetime.datetime:
-                if i not in self.epochs:
-                    self.epochs[i] = v
-                c[i] = (v - self.epochs[i]).total_seconds() / self.datetime_unit
-        return c[0], c[1]
 
     def _plot_common(
         self,
