@@ -1,5 +1,6 @@
 from . import primitives
 from . import transforms
+from . import vector_text
 
 import datetime
 import math
@@ -22,6 +23,7 @@ class Plot:
         self.rects = []
         self.late_vertexors = []
         self.texts = []
+        self.static_texter = vector_text.Texter()
         self.x_min =  math.inf
         self.x_max = -math.inf
         self.y_min =  math.inf
@@ -57,6 +59,13 @@ class Plot:
         '`scale` is the number of pixels between the left side of each character.'
         self.texts.append([s, x, y, r, g, b, a, max_w, max_h, scale])
         self._include(x, y)
+
+    def text_static(self, s, x, y, w=1, h=1, r=255, g=255, b=255, a=255):
+        '`w` and `h` are for a single character.'
+        if not s: return
+        self.static_texter.text(s, x, y, w, h, r, g, b, a)
+        self._include(*self.static_texter.bounds[0:2])
+        self._include(*self.static_texter.bounds[2:4])
 
     def show(self, w=640, h=480):
         from .show import show

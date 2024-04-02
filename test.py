@@ -231,3 +231,15 @@ if args.case in ['11', 'histogram', 'all']:
 if args.case in ['12', 'empty', 'all']:
     print('plotting empty plot')
     dpc.plot([])
+
+#===== static text =====#
+if args.case in ['13', 'static-text', 'all']:
+    print('plotting a bunch of static text (rendering should be snappy)')
+    plot = dpc.Plot()
+    for i in range(300):
+        plot.text_static(
+            str(random.randint(0, 1e22)),
+            (i % 5) * 30,
+            (i // 5) * 1.5,
+        )
+    plot.show()

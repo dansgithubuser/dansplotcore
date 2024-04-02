@@ -217,15 +217,22 @@ glyphs = {
 class Texter:
     def __init__(self):
         self.data = [];
+        self.bounds = None
 
     def text(self, s, x, y, w, h, r=1.0, g=1.0, b=1.0, a=1.0):
+        if not self.bounds:
+            self.bounds = [x, y, x, y]
         x_i = x
         for c in s:
             self.glyph(c, x, y, w, h, r, g, b, a)
             x += w
+            self.bounds[0] = min(self.bounds[0], x)
+            self.bounds[2] = max(self.bounds[2], x)
             if c == '\n':
                 x = x_i
                 y -= h * 2
+            self.bounds[1] = min(self.bounds[1], y)
+            self.bounds[3] = max(self.bounds[3], y)
 
     def glyph(self, c, x, y, w, h, r, g, b, a):
         glyph = glyphs.get(c, glyphs[None])

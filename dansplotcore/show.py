@@ -69,10 +69,13 @@ def construct(plot, view, w, h):
     for x, y, r, g, b, a in plot.points:
         plot.buffer.add(x, y, *fcolor(r, g, b, a))
     points_f = len(plot.buffer)
-    # lines
+    # lines & static text
     for xi, yi, xf, yf, r, g, b, a in plot.lines:
         plot.buffer.add(xi, yi, *fcolor(r, g, b, a))
         plot.buffer.add(xf, yf, *fcolor(r, g, b, a))
+    for i in range(0, len(plot.static_texter.data), 6):
+        x, y, r, g, b, a = plot.static_texter.data[i:i+6]
+        plot.buffer.add(x, y, *fcolor(r, g, b, a))
     lines_f = len(plot.buffer)
     # rects
     for xi, yi, xf, yf, r, g, b, a in plot.rects:
