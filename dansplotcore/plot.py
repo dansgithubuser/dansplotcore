@@ -111,7 +111,7 @@ class Plot:
             self.primitive(**self.transform(x_curr, y_curr, i, self.series))
         self._plot_common(**kwargs)
 
-    def plot_2d(self, array, **kwargs):
+    def plot_2d(self, array, *, x_increment=1, y_increment=1, **kwargs):
         z_min = math.inf
         z_max = -math.inf
         for row in array:
@@ -129,13 +129,13 @@ class Plot:
                 if 'r' in a: rect['r'] = a['r']
                 if 'g' in a: rect['g'] = a['g']
                 if 'b' in a: rect['b'] = a['b']
-                b = self.transform(self._increment(x), self._increment(y), i, self.series)
+                b = self.transform(self._increment(x, x_increment), self._increment(y, y_increment), i, self.series)
                 rect['xf'] = b['x']
                 rect['yf'] = b['y']
                 self.rect(**rect)
         self._plot_common(**kwargs)
 
-    def plot_heatmap(self, triples, **kwargs):
+    def plot_heatmap(self, triples, *, x_increment=1, y_increment=1, **kwargs):
         z_min = math.inf
         z_max = -math.inf
         zs = [i[2] for i in triples]
@@ -152,7 +152,7 @@ class Plot:
             if 'r' in a: rect['r'] = a['r']
             if 'g' in a: rect['g'] = a['g']
             if 'b' in a: rect['b'] = a['b']
-            b = self.transform(self._increment(x), self._increment(y), i, self.series)
+            b = self.transform(self._increment(x, x_increment), self._increment(y, y_increment), i, self.series)
             rect['xf'] = b['x']
             rect['yf'] = b['y']
             self.rect(**rect)
@@ -227,11 +227,11 @@ class Plot:
         if next_series:
             self.next_series()
 
-    def _increment(self, x):
+    def _increment(self, x, amount=1):
         if type(x) == datetime.datetime:
-            return x + datetime.timedelta(seconds=self.datetime_unit)
+            return x + datetime.timedelta(seconds=self.datetime_unit) * amount
         else:
-            return x + 1
+            return x + amount
 
 def plot(
     *args,
