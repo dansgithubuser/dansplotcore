@@ -1,6 +1,7 @@
 import dansplotcore as dpc
 
 import argparse
+import collections
 import datetime
 import math
 import random
@@ -242,4 +243,15 @@ if args.case in ['13', 'static-text', 'all']:
             (i % 5) * 30,
             (i // 5) * 1.5,
         )
+    plot.show()
+
+#===== heatmap =====#
+if args.case in ['14', 'heatmap', 'all']:
+    print('plotting heatmap')
+    heatmap = collections.defaultdict(int)
+    for i in range(1000):
+        xy = (random.randint(0, 10), random.randint(0, 10))
+        heatmap[xy] += random.randint(0, 10)
+    plot = dpc.Plot()
+    plot.plot_heatmap([(*xy, z) for xy, z in heatmap.items()])
     plot.show()

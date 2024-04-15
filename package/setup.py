@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='dansplotcore',
-    version='6.1.0',
+    version='6.2.0',
     description='low-latency interactive plots',
     long_description="Dan's Plot Core is a minimal library that adds plots with low-latency interactivity to Python.",
     url='http://github.com/dansgithubuser/dansplotcore',

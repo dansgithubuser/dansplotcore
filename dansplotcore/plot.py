@@ -112,27 +112,50 @@ class Plot:
         self._plot_common(**kwargs)
 
     def plot_2d(self, array, **kwargs):
-        v_min = math.inf
-        v_max = -math.inf
+        z_min = math.inf
+        z_max = -math.inf
         for row in array:
-            v_min = min(v_min, min(row))
-            v_max = max(v_max, max(row))
-        v_rng = v_max - v_min
-        if v_rng == 0: return
+            z_min = min(z_min, min(row))
+            z_max = max(z_max, max(row))
+        z_rng = z_max - z_min
+        if z_rng == 0: return
         i = 0
         for y, row in enumerate(array):
-            for x, v in enumerate(row):
-                kwargs = {'a': float((v - v_min) / v_rng)}
+            for x, z in enumerate(row):
+                rect = {'a': float((z - z_min) / z_rng)}
                 a = self.transform(x, y, i, self.series)
-                kwargs['xi'] = a['x']
-                kwargs['yi'] = a['y']
-                if 'r' in a: kwargs['r'] = a['r']
-                if 'g' in a: kwargs['g'] = a['g']
-                if 'b' in a: kwargs['b'] = a['b']
+                rect['xi'] = a['x']
+                rect['yi'] = a['y']
+                if 'r' in a: rect['r'] = a['r']
+                if 'g' in a: rect['g'] = a['g']
+                if 'b' in a: rect['b'] = a['b']
                 b = self.transform(x+1, y+1, i, self.series)
-                kwargs['xf'] = b['x']
-                kwargs['yf'] = b['y']
-                self.rect(**kwargs)
+                rect['xf'] = b['x']
+                rect['yf'] = b['y']
+                self.rect(**rect)
+        self._plot_common(**kwargs)
+
+    def plot_heatmap(self, triples, **kwargs):
+        z_min = math.inf
+        z_max = -math.inf
+        zs = [i[2] for i in triples]
+        z_min = min(zs)
+        z_max = max(zs)
+        z_rng = z_max - z_min
+        if z_rng == 0: return
+        i = 0
+        for x, y, z in triples:
+            rect = {'a': float((z - z_min) / z_rng)}
+            a = self.transform(x, y, i, self.series)
+            rect['xi'] = a['x']
+            rect['yi'] = a['y']
+            if 'r' in a: rect['r'] = a['r']
+            if 'g' in a: rect['g'] = a['g']
+            if 'b' in a: rect['b'] = a['b']
+            b = self.transform(x+1, y+1, i, self.series)
+            rect['xf'] = b['x']
+            rect['yf'] = b['y']
+            self.rect(**rect)
         self._plot_common(**kwargs)
 
     def plot_empty(self, *args, **kwargs):
