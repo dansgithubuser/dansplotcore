@@ -129,7 +129,7 @@ class Plot:
                 if 'r' in a: rect['r'] = a['r']
                 if 'g' in a: rect['g'] = a['g']
                 if 'b' in a: rect['b'] = a['b']
-                b = self.transform(x+1, y+1, i, self.series)
+                b = self.transform(self._increment(x), self._increment(y), i, self.series)
                 rect['xf'] = b['x']
                 rect['yf'] = b['y']
                 self.rect(**rect)
@@ -152,7 +152,7 @@ class Plot:
             if 'r' in a: rect['r'] = a['r']
             if 'g' in a: rect['g'] = a['g']
             if 'b' in a: rect['b'] = a['b']
-            b = self.transform(x+1, y+1, i, self.series)
+            b = self.transform(self._increment(x), self._increment(y), i, self.series)
             rect['xf'] = b['x']
             rect['yf'] = b['y']
             self.rect(**rect)
@@ -226,6 +226,12 @@ class Plot:
             self.text(legend, max_h=abs(self.legend_displacement[1]) or 1, **kwargs)
         if next_series:
             self.next_series()
+
+    def _increment(self, x):
+        if type(x) == datetime.datetime:
+            return x + datetime.timedelta(seconds=self.datetime_unit)
+        else:
+            return x + 1
 
 def plot(
     *args,
