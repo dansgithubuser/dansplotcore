@@ -255,3 +255,15 @@ if args.case in ['14', 'heatmap', 'all']:
     plot = dpc.Plot()
     plot.plot_heatmap([(*xy, z) for xy, z in heatmap.items()])
     plot.show()
+
+#===== log-log =====#
+if args.case in ['15', 'log-log', 'all']:
+    print('plotting 1, x, x ** 2, x ** 3 with log-log axes')
+    plot = dpc.Plot(
+        primitive=dpc.p.Line(),
+        x_axis_transform=lambda x: 10 ** x,
+        y_axis_transform=lambda y: 10 ** y,
+    )
+    for i in range(4):
+        plot.plot([(math.log10(j), math.log10(j ** i)) for j in range(1, 101)])
+    plot.show()

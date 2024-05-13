@@ -12,6 +12,8 @@ class Plot:
         *,
         transform=None,
         hide_axes=False,
+        x_axis_transform=None,
+        y_axis_transform=None,
         primitive=None,
         datetime_unit=1,
         legend_displacement=(0, -1),
@@ -32,6 +34,8 @@ class Plot:
         self.series = 0
         self.transform = transform or transforms.Default()
         self.hide_axes = hide_axes
+        self.x_axis_transform = x_axis_transform
+        self.y_axis_transform = y_axis_transform
         self.set_primitive(primitive or primitives.Point())
         self.datetime_unit = datetime_unit
         self.legend_displacement = legend_displacement
@@ -107,7 +111,10 @@ class Plot:
         args_prev = None
         for i in range(steps):
             x_curr = x[0] + (x[1]-x[0]) * i/(steps-1)
-            y_curr = f(x_curr)
+            try:
+                y_curr = f(x_curr)
+            except Exception as e:
+                continue
             self.primitive(**self.transform(x_curr, y_curr, i, self.series))
         self._plot_common(**kwargs)
 
@@ -213,7 +220,6 @@ class Plot:
         self,
         next_series=True,
         legend=None,
-        **kwargs,
     ):
         if legend:
             kwargs = self.transform(0, 0, 0, self.series)
@@ -233,20 +239,8 @@ class Plot:
         else:
             return x + amount
 
-def plot(
-    *args,
-    title='plot',
-    transform=None,
-    hide_axes=False,
-    primitive=None,
-    **kwargs,
-):
-    Plot(
-        title,
-        transform=transform,
-        hide_axes=hide_axes,
-        primitive=primitive,
-    ).plot(*args, **kwargs).show()
+def plot(*args, **kwargs):
+    Plot(**kwargs).plot(*args).show()
 
 def _type_r(v, max_depth=None, _depth=0):
     if type(v).__name__ in ['int', 'float', 'float64']: return 'number'

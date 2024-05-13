@@ -209,7 +209,11 @@ def show(plot, w, h):
                 increment /= 2
             i = view.x // increment * increment + increment
             while i < view.x + view.w:
-                s = '{:.5}'.format(i)
+                if plot.x_axis_transform:
+                    t = plot.x_axis_transform(i)
+                else:
+                    t = i
+                s = '{:.5}'.format(t)
                 if view.x + view.w - i > increment:
                     if i == 0 and plot.epochs.get('x') != None:
                         texter.text(
@@ -231,7 +235,11 @@ def show(plot, w, h):
                 increment /= 2
             i = (view.y + text_h + 2*margin_y) // increment * increment + increment
             while i < view.y + view.h - (text_h + 2*margin_y):
-                s = '{:.5}'.format(i)
+                if plot.y_axis_transform:
+                    t = plot.y_axis_transform(i)
+                else:
+                    t = i
+                s = '{:.5}'.format(t)
                 if i == 0 and plot.epochs.get('y') != None:
                     texter.text(
                         plot.epochs['y']['min'].isoformat('\n'),
