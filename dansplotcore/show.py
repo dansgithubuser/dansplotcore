@@ -138,6 +138,8 @@ def show(plot, w, h):
         view.w = new_view_w
         view.h = new_view_h
         media.view_set(*view.tuple())
+        if plot.late_vertexors:
+            construct(plot, view, media.width(), media.height())
     reset()
     construct(plot, view, w, h)
     def on_resize(w, h):
@@ -261,5 +263,6 @@ def show(plot, w, h):
         mouse_scroll=on_mouse_scroll,
         key_press=on_key_press,
         draw=on_draw,
+        resize=on_resize,
     )
     media.run()

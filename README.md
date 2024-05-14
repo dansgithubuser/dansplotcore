@@ -14,7 +14,3 @@ Dan's Plot Core is a minimal library that adds plots with low-latency interactiv
     - Logical coordinates are converted to display coordinates on each render.
         - This step is quick because it is done on the graphics card.
 - The convenience function `plot` can do all of the above for simple usages.
-
-## todo
-- late vertexors don't respond to resizing or zooming
-- screen-relative text

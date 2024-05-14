@@ -53,7 +53,7 @@ if args.case in ['1', 'general', 'all']:
         elif choice == 'text' and not random.randint(0, 100):
             s = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(1, 8)))
             plot.text(s, x, y, r, g, b, a)
-        elif choice == 'plus':
+        elif choice == 'plus' and not random.randint(0, 10):
             plot.late_vertexor(dpc.p.Plus().vertexor, x, y, r, g, b, a)
 
     plot.show()

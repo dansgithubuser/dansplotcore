@@ -141,10 +141,11 @@ def clear():
     gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
 def set_callbacks(
-    mouse_drag=None,
-    mouse_scroll=None,
-    key_press=None,
-    draw=None,
+    mouse_drag,
+    mouse_scroll,
+    key_press,
+    draw,
+    resize,
 ):
     @F.window.event
     def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
@@ -175,6 +176,10 @@ def set_callbacks(
         gl.glUniform2f(F.locations['uOrigin'], *F.origin)
         gl.glUniform2f(F.locations['uZoom'  ], *F.zoom)
         draw()
+
+    @F.window.event
+    def on_resize(width, height):
+        resize(width, height)
 
 def run():
     gl.glEnable(gl.GL_BLEND);
