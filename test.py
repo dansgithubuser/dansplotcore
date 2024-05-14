@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import dansplotcore as dpc
 
 import argparse
@@ -266,4 +268,18 @@ if args.case in ['15', 'log-log', 'all']:
     )
     for i in range(4):
         plot.plot([(math.log10(j), math.log10(j ** i)) for j in range(1, 101)])
+    plot.show()
+
+#===== contours =====#
+if args.case in ['16', 'contours', 'all']:
+    print('plotting contours of a y = quantized(randomized(x))')
+    points = []
+    for i in range(10000):
+        x = i / 1000 + random.random()
+        y = int(x * random.random())
+        points.append((x, y))
+    plot = dpc.Plot()
+    dpc.process.contours(points, plot=plot)
+    for point in points:
+        plot.point(*point)
     plot.show()
