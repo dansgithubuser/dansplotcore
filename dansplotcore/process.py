@@ -16,7 +16,7 @@ def bucket(l, bucket_count=None):
         buckets[index] += 1
     return [(data_min + i * bucket_size, v) for i, v in enumerate(buckets)]
 
-def contours(points, *, n=5, ticks=1000, spread=50, plot=None):
+def contours(points, *, n=5, ticks=1000, spread=100, plot=None):
     '''
     Take in a list of (x, y) points and spit out a list of (x, *y_avg_i) for i in [0, n).
     A window is slid from min(x) to max(x) and at each spot, n trimmed averages are taken.
@@ -37,7 +37,7 @@ def contours(points, *, n=5, ticks=1000, spread=50, plot=None):
     x_spread = x_scale * spread / 2
     lines = []
     for tick in range(ticks):
-        x = tick * x_scale
+        x = x_min + tick * x_scale
         window_min = x - x_spread
         window_max = x + x_spread
         bucket = sorted(y for (x, y) in points if window_min <= x < window_max)
@@ -55,3 +55,4 @@ def contours(points, *, n=5, ticks=1000, spread=50, plot=None):
             for i in range(n):
                 m = (n-1) / 2
                 plot.line(xi, yi[i], xf, yf[i], r=0, g=1 - abs(i - m) / m)
+    return lines
