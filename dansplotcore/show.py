@@ -140,6 +140,11 @@ def show(plot, w, h):
         media.view_set(*view.tuple())
         if plot.late_vertexors:
             construct(plot, view, media.width(), media.height())
+    def square(view):
+        view.w = view.h * media.width() / media.height()
+        media.view_set(*view.tuple())
+        if plot.late_vertexors:
+            construct(plot, view, media.width(), media.height())
     reset()
     construct(plot, view, w, h)
     def on_resize(w, h):
@@ -175,6 +180,9 @@ def show(plot, w, h):
             return
         if key == 'Return':
             media.capture()
+            return
+        if key == 'x':
+            square(view)
             return
     def on_draw():
         media.clear()
