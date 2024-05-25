@@ -92,6 +92,7 @@ class Plot:
     def variable(self, name, x, y, dims='xy', home=None):
         var = Variable(name, x, y, 'x' in dims, 'y' in dims, home)
         self.variables.append(var)
+        self._include(x, y)
         return var
 
     def show(self, w=640, h=480):
