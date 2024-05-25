@@ -283,3 +283,16 @@ if args.case in ['16', 'contours', 'all']:
     for point in points:
         plot.point(*point)
     plot.show()
+
+#===== variables =====#
+if args.case in ['17', 'variables', 'all']:
+    print('making a plot with some variables (right-click drag to move)')
+    plot = dpc.Plot()
+    plot.plot(lambda x: x ** 2)
+    a = plot.variable('a', 0, 1, 'x', home=(0, 0))
+    b = plot.variable('b', 0, 0, 'y')
+    c = plot.variable('c', 1, 1)
+    plot.show()
+    print('a =', a())
+    print('b =', b())
+    print('c =', c())

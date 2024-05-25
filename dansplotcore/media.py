@@ -85,6 +85,9 @@ class Buffer:
     def add_data(self, data):
         self.data.extend(data)
 
+    def clear(self):
+        self.data.clear()
+
     def prep(self, usage):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
         gl.glBufferData(
@@ -141,45 +144,71 @@ def clear():
     gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
 def set_callbacks(
-    mouse_drag,
-    mouse_scroll,
-    key_press,
-    draw,
-    resize,
+    mouse_press_left=None,
+    mouse_press_right=None,
+    mouse_release_left=None,
+    mouse_release_right=None,
+    mouse_drag_left=None,
+    mouse_drag_right=None,
+    mouse_scroll=None,
+    key_press=None,
+    draw=None,
+    resize=None,
 ):
     @F.window.event
+    def on_mouse_press(x, y, button, modifiers):
+        if button == pyglet.window.mouse.LEFT and mouse_press_left:
+            mouse_press_left(x, y)
+        if button == pyglet.window.mouse.RIGHT and mouse_press_right:
+            mouse_press_right(x, y)
+
+    @F.window.event
+    def on_mouse_release(x, y, button, modifiers):
+        if button == pyglet.window.mouse.LEFT and mouse_release_left:
+            mouse_release_left(x, y)
+        if button == pyglet.window.mouse.RIGHT and mouse_release_right:
+            mouse_release_right(x, y)
+
+    @F.window.event
     def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-        mouse_drag(dx, dy)
+        if buttons & pyglet.window.mouse.LEFT and mouse_drag_left:
+            mouse_drag_left(x, y, dx, dy)
+        if buttons & pyglet.window.mouse.RIGHT and mouse_drag_right:
+            mouse_drag_right(x, y, dx, dy)
 
     @F.window.event
     def on_mouse_scroll(x, y, scroll_x, scroll_y):
-        mouse_scroll(x, y, scroll_y)
+        if mouse_scroll:
+            mouse_scroll(x, y, scroll_y)
 
     @F.window.event
     def on_key_press(symbol, modifiers):
-        if 32 <= symbol < 127:
-            key = chr(symbol)
-        else:
-            key = {
-                pyglet.window.key.LEFT  : 'Left',
-                pyglet.window.key.RIGHT : 'Right',
-                pyglet.window.key.UP    : 'Up',
-                pyglet.window.key.DOWN  : 'Down',
-                pyglet.window.key.SPACE : 'Space',
-                pyglet.window.key.RETURN: 'Return',
-            }.get(symbol)
-        if key: key_press(key)
+        if key_press:
+            if 32 <= symbol < 127:
+                key = chr(symbol)
+            else:
+                key = {
+                    pyglet.window.key.LEFT  : 'Left',
+                    pyglet.window.key.RIGHT : 'Right',
+                    pyglet.window.key.UP    : 'Up',
+                    pyglet.window.key.DOWN  : 'Down',
+                    pyglet.window.key.SPACE : 'Space',
+                    pyglet.window.key.RETURN: 'Return',
+                }.get(symbol)
+            if key: key_press(key)
 
     @F.window.event
     def on_draw():
         gl.glUseProgram(F.program)
         gl.glUniform2f(F.locations['uOrigin'], *F.origin)
         gl.glUniform2f(F.locations['uZoom'  ], *F.zoom)
-        draw()
+        if draw:
+            draw()
 
     @F.window.event
     def on_resize(width, height):
-        resize(width, height)
+        if resize:
+            resize(width, height)
 
 def run():
     gl.glEnable(gl.GL_BLEND);

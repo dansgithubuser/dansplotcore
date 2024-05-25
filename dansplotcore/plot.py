@@ -5,6 +5,23 @@ from . import vector_text
 import datetime
 import math
 
+class Variable:
+    def __init__(self, name, x, y, x_var, y_var, home=None):
+        self.name = name
+        self.x_var = x_var
+        self.y_var = y_var
+        self.x = x
+        self.y = y
+        self.home = home
+
+    def __call__(self):
+        if self.x_var and self.y_var:
+            return (self.x, self.y)
+        if self.x_var:
+            return self.x
+        if self.y_var:
+            return self.y
+
 class Plot:
     def __init__(
         self,
@@ -40,6 +57,7 @@ class Plot:
         self.datetime_unit = datetime_unit
         self.legend_displacement = legend_displacement
         self.legend_offset = legend_offset
+        self.variables = []
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
         self.points.append([x, y, r, g, b, a])
@@ -70,6 +88,11 @@ class Plot:
         self.static_texter.text(s, x, y, w, h, r, g, b, a)
         self._include(*self.static_texter.bounds[0:2])
         self._include(*self.static_texter.bounds[2:4])
+
+    def variable(self, name, x, y, dims='xy', home=None):
+        var = Variable(name, x, y, 'x' in dims, 'y' in dims, home)
+        self.variables.append(var)
+        return var
 
     def show(self, w=640, h=480):
         from .show import show

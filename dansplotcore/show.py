@@ -54,7 +54,7 @@ def translate_dates(plot):
 
 def construct(plot, view, w, h):
     plot.buffer = media.Buffer()
-    plot.buffer_text = media.Buffer()
+    plot.buffer_dyn = media.Buffer()
     # late vertexors
     if plot.late_vertexors:
         if hasattr(plot, 'original_points'):
@@ -145,14 +145,30 @@ def show(plot, w, h):
         media.view_set(*view.tuple())
         if plot.late_vertexors:
             construct(plot, view, media.width(), media.height())
+    class VarChanger:
+        var = None
     reset()
     construct(plot, view, w, h)
     def on_resize(w, h):
         zoom(view, w/media.width(), h/media.height(), w/2, h/2)
         if plot.late_vertexors:
             construct(plot, view, media.width(), media.height())
-    def on_mouse_drag(dx, dy):
+    def on_mouse_press_right(x, y):
+        for var in plot.variables:
+            if abs((var.x - view.x) / view.w * media.width() - x) > 5:
+                continue
+            if abs((var.y - view.y) / view.h * media.height() - y) > 5:
+                continue
+            VarChanger.var = var
+            break
+    def on_mouse_release_right(x, y):
+        VarChanger.var = None
+    def on_mouse_drag_left(x, y, dx, dy):
         move(view, dx, dy)
+    def on_mouse_drag_right(x, y, dx, dy):
+        if var := VarChanger.var:
+            var.x += dx * view.w / media.width()
+            var.y += dy * view.h / media.height()
     def on_mouse_scroll(x, y, delta):
         z = 1.25 if delta > 0 else 0.8
         zoom(view, z, z, x, y)
@@ -189,8 +205,9 @@ def show(plot, w, h):
         plot.buffer.draw()
         margin_x = 5.0 / media.width()  * view.w
         margin_y = 5.0 / media.height() * view.h
-        # draw texts
         texter = media.Texter()
+        plot.buffer_dyn.clear()
+        # draw texts
         for (s, x, y, r, g, b, a, max_w, max_h, scale) in plot.texts:
             text_w = scale / media.width()  * view.w
             text_h = scale * 3/2 / media.height() * view.h
@@ -208,6 +225,29 @@ def show(plot, w, h):
                 text_h / 2 / over,
                 r, g, b, a,
             )
+        # draw variables
+        text_w = 10 / media.width()  * view.w
+        text_h = 15 / media.height() * view.h
+        for var in plot.variables:
+            texter.text(
+                var.name, var.x + margin_x, var.y + margin_y,
+                text_w,
+                text_h,
+            )
+            plot.buffer_dyn.add(var.x - margin_x, var.y, 1.0, 1.0, 1.0, 1.0)
+            plot.buffer_dyn.add(var.x + margin_x, var.y, 1.0, 1.0, 1.0, 1.0)
+            plot.buffer_dyn.add(var.x, var.y - margin_y, 1.0, 1.0, 1.0, 1.0)
+            plot.buffer_dyn.add(var.x, var.y + margin_y, 1.0, 1.0, 1.0, 1.0)
+            if var.x_var:
+                plot.buffer_dyn.add(var.x, view.y - view.h, 1.0, 1.0, 1.0, 0.2)
+                plot.buffer_dyn.add(var.x, view.y + view.h, 1.0, 1.0, 1.0, 0.2)
+            if var.y_var:
+                plot.buffer_dyn.add(view.x - view.w, var.y, 1.0, 1.0, 1.0, 0.2)
+                plot.buffer_dyn.add(view.x + view.w, var.y, 1.0, 1.0, 1.0, 0.2)
+            if var.home:
+                plot.buffer_dyn.add(var.x, var.y, 1.0, 1.0, 1.0, 0.2)
+                x, y = var.home
+                plot.buffer_dyn.add(x, y, 1.0, 1.0, 1.0, 0.2)
         if not plot.hide_axes:
             text_w = 10 / media.width()  * view.w
             text_h = 15 / media.height() * view.h
@@ -262,12 +302,15 @@ def show(plot, w, h):
                     texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
                 texter.text('L', view.x, i, text_w * 2, text_h)
                 i += increment
-        plot.buffer_text.data = texter.data
-        plot.buffer_text.prep('dynamic')
-        plot.buffer_text.draws = [('lines', 0, len(plot.buffer_text.data))]
-        plot.buffer_text.draw()
+        plot.buffer_dyn.add_data(texter.data)
+        plot.buffer_dyn.prep('dynamic')
+        plot.buffer_dyn.draws = [('lines', 0, len(plot.buffer_dyn.data))]
+        plot.buffer_dyn.draw()
     media.set_callbacks(
-        mouse_drag=on_mouse_drag,
+        mouse_press_right=on_mouse_press_right,
+        mouse_release_right=on_mouse_release_right,
+        mouse_drag_left=on_mouse_drag_left,
+        mouse_drag_right=on_mouse_drag_right,
         mouse_scroll=on_mouse_scroll,
         key_press=on_key_press,
         draw=on_draw,
