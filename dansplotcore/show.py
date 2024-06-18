@@ -125,6 +125,8 @@ def show(plot, w, h):
         if view.h == 0:
             view.h = 1
         media.view_set(*view.tuple())
+        if plot.late_vertexors:
+            construct(plot, view, media.width(), media.height())
     def move(view, dx, dy):
         view.x -= dx*view.w/media.width()
         view.y -= dy*view.h/media.height()
