@@ -260,25 +260,36 @@ def show(plot, w, h):
             elif view.w / increment < 5:
                 increment /= 2
             i = view.x // increment * increment + increment
-            while i < view.x + view.w:
+            if plot.x_axis_title:
+                x_axis_title_w = text_w * len(plot.x_axis_title)
+            else:
+                x_axis_title_w = 0
+            while i < view.x + view.w - (x_axis_title_w + 6 * text_w + margin_x):
                 if plot.x_axis_transform:
                     t = plot.x_axis_transform(i)
                 else:
                     t = i
                 s = '{:.5}'.format(t)
-                if view.x + view.w - i > increment:
-                    if i == 0 and plot.epochs.get('x') != None:
-                        texter.text(
-                            plot.epochs['x']['min'].isoformat('\n'),
-                            x=i + margin_x,
-                            y=view.y + margin_y + 1.33 * text_h,
-                            w=text_w * 0.66,
-                            h=text_h * 0.66,
-                        )
-                    else:
-                        texter.text(s, x=i+margin_x, y=view.y+margin_y, w=text_w, h=text_h)
-                    texter.text('L', i, view.y, text_w * 2, text_h)
+                if i == 0 and plot.epochs.get('x') != None:
+                    texter.text(
+                        plot.epochs['x']['min'].isoformat('\n'),
+                        x=i + margin_x,
+                        y=view.y + margin_y + 1.33 * text_h,
+                        w=text_w * 0.66,
+                        h=text_h * 0.66,
+                    )
+                else:
+                    texter.text(s, x=i+margin_x, y=view.y+margin_y, w=text_w, h=text_h)
+                texter.text('L', i, view.y, text_w * 2, text_h)
                 i += increment
+            if plot.x_axis_title:
+                texter.text(
+                    plot.x_axis_title,
+                    x=view.x + view.w - x_axis_title_w,
+                    y=view.y + margin_y,
+                    w=text_w,
+                    h=text_h,
+                )
             # draw y axis
             increment = 10 ** math.floor(math.log10(view.h))
             if view.h / increment < 2:
@@ -286,7 +297,11 @@ def show(plot, w, h):
             elif view.h / increment < 5:
                 increment /= 2
             i = (view.y + text_h + 2*margin_y) // increment * increment + increment
-            while i < view.y + view.h - (text_h + 2*margin_y):
+            if plot.y_axis_title:
+                y_axis_title_h = text_h + 2 * margin_y
+            else:
+                y_axis_title_h = 0
+            while i < view.y + view.h - (text_h + 2 * margin_y + y_axis_title_h):
                 if plot.y_axis_transform:
                     t = plot.y_axis_transform(i)
                 else:
@@ -304,6 +319,14 @@ def show(plot, w, h):
                     texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
                 texter.text('L', view.x, i, text_w * 2, text_h)
                 i += increment
+            if plot.y_axis_title:
+                texter.text(
+                    plot.y_axis_title,
+                    x=view.x + margin_x,
+                    y=view.y + view.h - text_h - margin_y,
+                    w=text_w,
+                    h=text_h,
+                )
         plot.buffer_dyn.add_data(texter.data)
         plot.buffer_dyn.prep('dynamic')
         plot.buffer_dyn.draws = [('lines', 0, len(plot.buffer_dyn.data))]

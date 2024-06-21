@@ -28,10 +28,12 @@ class Plot:
         title='plot',
         *,
         transform=None,
+        primitive=None,
         hide_axes=False,
+        x_axis_title=None,
+        y_axis_title=None,
         x_axis_transform=None,
         y_axis_transform=None,
-        primitive=None,
         datetime_unit=1,
         legend_displacement=(0, -1),
         legend_offset=(0, -1),
@@ -50,10 +52,12 @@ class Plot:
         self.epochs = {}
         self.series = 0
         self.transform = transform or transforms.Default()
+        self.set_primitive(primitive or primitives.Point())
         self.hide_axes = hide_axes
+        self.x_axis_title = x_axis_title
+        self.y_axis_title = y_axis_title
         self.x_axis_transform = x_axis_transform
         self.y_axis_transform = y_axis_transform
-        self.set_primitive(primitive or primitives.Point())
         self.datetime_unit = datetime_unit
         self.legend_displacement = legend_displacement
         self.legend_offset = legend_offset

@@ -39,7 +39,7 @@ if args.case in ['1', 'general', 'all']:
         - reddish on right
         - greenish on top\
     ''')
-    plot = dpc.Plot('test')
+    plot = dpc.Plot('test', x_axis_title='x-axis', y_axis_title='y-axis')
 
     for i in range(10000):
         x, y = random_position()
