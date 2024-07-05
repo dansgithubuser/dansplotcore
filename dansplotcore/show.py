@@ -40,6 +40,8 @@ def translate_dates(plot):
         translate_x_date(plot, plot.lines, 2)
         translate_x_date(plot, plot.rects, 0)
         translate_x_date(plot, plot.rects, 2)
+        translate_x_date(plot, plot.texts, 1)
+        translate_x_date(plot, plot.texts_static, 1)
         plot.x_max = max(plot.x_max, (plot.epochs['x']['max'] - plot.epochs['x']['min']).total_seconds() / plot.datetime_unit)
         plot.x_min = min(plot.x_min, 0)
     if 'y' in plot.epochs:
@@ -49,6 +51,8 @@ def translate_dates(plot):
         translate_y_date(plot, plot.lines, 3)
         translate_y_date(plot, plot.rects, 1)
         translate_y_date(plot, plot.rects, 3)
+        translate_y_date(plot, plot.texts, 2)
+        translate_y_date(plot, plot.texts_static, 2)
         plot.y_max = max(plot.y_max, (plot.epochs['y']['max'] - plot.epochs['y']['min']).total_seconds() / plot.datetime_unit)
         plot.y_min = min(plot.y_min, 0)
 
@@ -73,8 +77,11 @@ def construct(plot, view, w, h):
     for xi, yi, xf, yf, r, g, b, a in plot.lines:
         plot.buffer.add(xi, yi, *fcolor(r, g, b, a))
         plot.buffer.add(xf, yf, *fcolor(r, g, b, a))
-    for i in range(0, len(plot.static_texter.data), 6):
-        x, y, r, g, b, a = plot.static_texter.data[i:i+6]
+    texter_static = media.Texter()
+    for s, x, y, w, h, r, g, b, a in plot.texts_static:
+        texter_static.text(s, x, y, w, h, r, g, b, a)
+    for i in range(0, len(texter_static.data), 6):
+        x, y, r, g, b, a = texter_static.data[i:i+6]
         plot.buffer.add(x, y, *fcolor(r, g, b, a))
     lines_f = len(plot.buffer)
     # rects

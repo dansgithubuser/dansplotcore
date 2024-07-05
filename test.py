@@ -145,6 +145,8 @@ if args.case in ['6', 'datetime', 'all']:
         - a point for the start of each month in 2000
         - y values are dates, axes show days since 2000 Jan 1
         - x values are numbers, days since 2000 Jan 1
+        - "hello" in the top-left (dynamic)
+        - "there" in the bottom-rigth (static)
     ''')
     dates = []
     for i in range(12):
@@ -152,7 +154,11 @@ if args.case in ['6', 'datetime', 'all']:
         x = (y - datetime.datetime(2000, 1, 1)).total_seconds() / (24 * 60 * 60)
         dates.append((x, y))
     dates.reverse()
-    dpc.Plot(datetime_unit=24*60*60).plot(dates).show()
+    plot = dpc.Plot(datetime_unit=24*60*60)
+    plot.plot(dates)
+    plot.text('hello', 0, datetime.datetime(2000, 12, 1))
+    plot.text_static('there', 300, datetime.datetime(2000, 1, 1), w=5, h=10)
+    plot.show()
 
 #===== scatter plot with lines =====#
 if args.case in ['7', 'scatter-line', 'all']:
