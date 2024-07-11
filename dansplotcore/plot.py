@@ -64,38 +64,38 @@ class Plot:
 
     def point(self, x, y, r=255, g=255, b=255, a=255):
         self.points.append([x, y, r, g, b, a])
-        self._include(x, y)
+        self.include(x, y)
 
     def line(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
         self.lines.append([xi, yi, xf, yf, r, g, b, a])
-        self._include(xi, yi)
-        self._include(xf, yf)
+        self.include(xi, yi)
+        self.include(xf, yf)
 
     def rect(self, xi, yi, xf, yf, r=255, g=255, b=255, a=255):
         self.rects.append([xi, yi, xf, yf, r, g, b, a])
-        self._include(xi, yi)
-        self._include(xf, yf)
+        self.include(xi, yi)
+        self.include(xf, yf)
 
     def late_vertexor(self, vertexor, x, y, r=255, g=255, b=255, a=255):
         self.late_vertexors.append([vertexor, x, y, r, g, b, a])
-        self._include(x, y)
+        self.include(x, y)
 
     def text(self, s, x, y, r=255, g=255, b=255, a=255, max_w=math.inf, max_h=math.inf, scale=10):
         '`scale` is the number of pixels between the left side of each character.'
         if not s: return
         self.texts.append([s, x, y, r, g, b, a, max_w, max_h, scale])
-        self._include(x, y)
+        self.include(x, y)
 
     def text_static(self, s, x, y, w=1, h=1, r=255, g=255, b=255, a=255):
         '`w` and `h` are for a single character.'
         if not s: return
         self.texts_static.append([s, x, y, w, h, r, g, b, a])
-        self._include(x, y)
+        self.include(x, y)
 
     def variable(self, name, x, y, dims='xy', home=None):
         var = Variable(name, x, y, 'x' in dims, 'y' in dims, home)
         self.variables.append(var)
-        self._include(x, y)
+        self.include(x, y)
         return var
 
     def show(self, w=640, h=480):
@@ -223,7 +223,7 @@ class Plot:
     def set_primitive(self, primitive):
         self.primitive = primitive.set_plot(self)
 
-    def _include(self, x, y):
+    def include(self, x, y):
         if type(x) == datetime.datetime:
             if 'x' in self.epochs:
                 self.epochs['x']['min'] = min(x, self.epochs['x']['min'])
