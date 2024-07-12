@@ -59,6 +59,7 @@ def compile_shader(type_, src):
 #===== file-scope =====#
 class F:
     program = None
+    program_is_default = True
     locations = {}
     window = None
     origin = [0, 0]
@@ -97,14 +98,37 @@ class Buffer:
             getattr(gl, f'GL_{usage.upper()}_DRAW'),
         )
 
-    def draw(self):
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer);
-        gl.glVertexAttribPointer(F.locations['aPosition'], 2, gl.GL_FLOAT, gl.GL_FALSE, 6 * 4, 0 * 4);
-        gl.glVertexAttribPointer(F.locations['aColor'   ], 4, gl.GL_FLOAT, gl.GL_FALSE, 6 * 4, 2 * 4);
+    def draw(self, attributes=None):
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
+        if attributes == None:
+            stride = 6
+            gl.glVertexAttribPointer(F.locations['aPosition'], 2, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, 0 * 4)
+            gl.glVertexAttribPointer(F.locations['aColor'   ], 4, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, 2 * 4)
+        else:
+            stride = sum(components for _, components in attributes)
+            offset = 0
+            for attribute in attributes:
+                attribute, components = attribute
+                gl.glVertexAttribPointer(F.locations[attribute], components, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, offset * 4)
+                offset += components
         for mode, first, count in self.draws:
             gl.glDrawArrays(getattr(gl, f'GL_{mode.upper()}'), first, count)
 
-def init(w, h, title):
+def init(
+    w,
+    h,
+    title,
+    *,
+    program=None,
+):
+    if program == None:
+        global vert_shader_src
+        global frag_shader_src
+        uniforms = ['uOrigin', 'uZoom']
+        attributes = ['aPosition', 'aColor']
+    else:
+        vert_shader_src, frag_shader_src, uniforms, attributes = program
+        F.program_is_default = False
     # window
     F.window = pyglet.window.Window(
         width=w,
@@ -119,13 +143,13 @@ def init(w, h, title):
     gl.glAttachShader(F.program, compile_shader(gl.GL_FRAGMENT_SHADER, frag_shader_src))
     gl.glLinkProgram(F.program)
     # uniforms
-    F.locations['uOrigin'] = gl.glGetUniformLocation(F.program, b'uOrigin')
-    F.locations['uZoom'  ] = gl.glGetUniformLocation(F.program, b'uZoom')
+    for uniform in uniforms:
+        F.locations[uniform] = gl.glGetUniformLocation(F.program, uniform.encode())
     # attributes
-    F.locations['aPosition'] = gl.glGetAttribLocation(F.program, b'aPosition')
-    F.locations['aColor'   ] = gl.glGetAttribLocation(F.program, b'aColor')
-    gl.glEnableVertexAttribArray(F.locations['aPosition'])
-    gl.glEnableVertexAttribArray(F.locations['aColor'])
+    for attribute in attributes:
+        F.locations[attribute] = gl.glGetAttribLocation(F.program, attribute.encode())
+    for attribute in attributes:
+        gl.glEnableVertexAttribArray(F.locations[attribute])
 
 def view_set(x, y, w, h):
     F.origin = [x + w/2, y + h/2]
@@ -200,8 +224,9 @@ def set_callbacks(
     @F.window.event
     def on_draw():
         gl.glUseProgram(F.program)
-        gl.glUniform2f(F.locations['uOrigin'], *F.origin)
-        gl.glUniform2f(F.locations['uZoom'  ], *F.zoom)
+        if F.program_is_default:
+            gl.glUniform2f(F.locations['uOrigin'], *F.origin)
+            gl.glUniform2f(F.locations['uZoom'  ], *F.zoom)
         if draw:
             draw()
 

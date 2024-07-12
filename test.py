@@ -302,3 +302,28 @@ if args.case in ['17', 'variables', 'all']:
     print('a =', a())
     print('b =', b())
     print('c =', c())
+
+#===== voxel =====#
+if args.case in ['18', 'voxel', 'all']:
+    import dansplotcore.voxel as voxel
+    plot = voxel.Plot(
+        x_i=-10, x_f=+10, x_size=20,
+        y_i=-10, y_f=+10, y_size=20,
+        z_i=-10, z_f=+10, z_size=20,
+    )
+    for i in range(-10, 10):
+        for j in range(-10, 10):
+            for k in range(-10, 10):
+                x = i
+                y = j
+                z = k
+                r = 1 / (1 + 2 ** (x * y))
+                g = 1 / (1 + 2 ** (y * z))
+                b = 1 / (1 + 2 ** (z * x))
+                a = 2 ** (1 - (x ** 2 + y ** 2 + z ** 2)) / 2
+                r = (x + 10) / 20
+                g = (y + 10) / 20
+                b = (z + 10) / 20
+                a = 1.0
+                plot.voxel(x, y, z, r, g, b, a)
+    plot.show()
