@@ -101,18 +101,34 @@ class Buffer:
     def draw(self, attributes=None):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
         if attributes == None:
-            stride = 6
-            gl.glVertexAttribPointer(F.locations['aPosition'], 2, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, 0 * 4)
-            gl.glVertexAttribPointer(F.locations['aColor'   ], 4, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, 2 * 4)
-        else:
-            stride = sum(components for _, components in attributes)
-            offset = 0
-            for attribute in attributes:
-                attribute, components = attribute
-                gl.glVertexAttribPointer(F.locations[attribute], components, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, offset * 4)
-                offset += components
+            attributes = self._attributes()
+        stride = sum(components for _, components in attributes)
+        offset = 0
+        for attribute in attributes:
+            attribute, components = attribute
+            gl.glVertexAttribPointer(F.locations[attribute], components, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, offset * 4)
+            offset += components
         for mode, first, count in self.draws:
             gl.glDrawArrays(getattr(gl, f'GL_{mode.upper()}'), first, count)
+
+    def _attributes(self):
+        return [
+            ('aPosition', 2),
+            ('aColor', 4),
+        ]
+
+class Buffer3d(Buffer):
+    def __len__(self):
+        return len(self.data) // 7
+
+    def add(self, x, y, z, r, g, b, a):
+        self.data.extend([x, y, z, r, g, b, a])
+
+    def _attributes(self):
+        return [
+            ('aPosition', 3),
+            ('aColor', 4),
+        ]
 
 def init(
     w,

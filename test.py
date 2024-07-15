@@ -304,7 +304,7 @@ if args.case in ['17', 'variables', 'all']:
     print('c =', c())
 
 #===== voxel =====#
-if args.case in ['18', 'voxel', 'all']:
+if args.case in ['18', 'voxel-basic', 'all', 'voxel']:
     import dansplotcore.voxel as voxel
     plot = voxel.Plot(
         x_i=-10, x_f=+10, x_size=20,
@@ -326,4 +326,21 @@ if args.case in ['18', 'voxel', 'all']:
                 b = (z + 10) / 20
                 a = 1.0
                 plot.voxel(x, y, z, r, g, b, a)
+    plot.show()
+
+#===== 3d =====#
+if args.case in ['19', 'volume', 'all', '3d']:
+    import dansplotcore.threed as threed
+    plot = threed.Plot()
+    for i in range(-100, 100, 5):
+        for j in range(-100, 100, 5):
+            for k in range(-100, 100, 5):
+                x = i / 10
+                y = j / 10
+                z = k / 10
+                r = 1 / (1 + 2 ** (x * y))
+                g = 1 / (1 + 2 ** (y * z))
+                b = 1 / (1 + 2 ** (z * x))
+                a = 2 ** (1 - (x ** 2 + y ** 2 + z ** 2)) / 2
+                plot.point(x, y, z, r, g, b, a)
     plot.show()
