@@ -1,5 +1,7 @@
 from . import media
 
+import numpy as np
+
 import math
 
 vert_shader_src = b'''\
@@ -37,6 +39,7 @@ class Plot:
     ):
         self.title = title
         self.points = media.Buffer3d()
+        self.tris = media.Buffer3d()
         self.x_min = +math.inf
         self.x_max = -math.inf
         self.y_min = +math.inf
@@ -47,6 +50,34 @@ class Plot:
     def point(self, x, y, z, r, g, b, a):
         self.points.add(x, y, z, r, g, b, a)
         self.include(x, y, z)
+
+    def triangle(self, xa, ya, za, xb, yb, zb, xc, yc, zc, r, g, b, a):
+        self.tris.add(xa, ya, za, r, g, b, a)
+        self.tris.add(xb, yb, zb, r, g, b, a)
+        self.tris.add(xc, yc, zc, r, g, b, a)
+        self.include(xa, ya, za)
+        self.include(xb, yb, zb)
+        self.include(xc, yc, zc)
+
+    def grid_cube(self, x, y, z, half_edge, r, g, b, a):
+        xi = x - half_edge / 2
+        yi = y - half_edge / 2
+        zi = z - half_edge / 2
+        xf = x + half_edge / 2
+        yf = y + half_edge / 2
+        zf = z + half_edge / 2
+        self.triangle(xi, yi, zi, xf, yi, zi, xf, yf, zi, r, g, b, a)
+        self.triangle(xi, yi, zi, xi, yf, zi, xf, yf, zi, r, g, b, a)
+        self.triangle(xi, yi, zi, xi, yf, zi, xi, yf, zf, r, g, b, a)
+        self.triangle(xi, yi, zi, xi, yi, zf, xi, yf, zf, r, g, b, a)
+        self.triangle(xi, yi, zi, xf, yi, zi, xf, yi, zf, r, g, b, a)
+        self.triangle(xi, yi, zi, xi, yi, zf, xf, yi, zf, r, g, b, a)
+        self.triangle(xf, yf, zf, xi, yf, zf, xi, yi, zf, r, g, b, a)
+        self.triangle(xf, yf, zf, xf, yi, zf, xi, yi, zf, r, g, b, a)
+        self.triangle(xf, yf, zf, xf, yi, zf, xf, yi, zi, r, g, b, a)
+        self.triangle(xf, yf, zf, xf, yf, zi, xf, yi, zi, r, g, b, a)
+        self.triangle(xf, yf, zf, xi, yf, zf, xi, yf, zi, r, g, b, a)
+        self.triangle(xf, yf, zf, xf, yf, zi, xi, yf, zi, r, g, b, a)
 
     def include(self, x, y, z):
         self.x_min = min(x, self.x_min)
@@ -91,12 +122,15 @@ class Plot:
         # construct
         self.points.prep('static')
         self.points.draws = [('points', 0, len(self.points))]
+        self.tris.prep('static')
+        self.tris.draws = [('triangles', 0, len(self.tris))]
         # callbacks
         def draw():
             media.clear()
             media.gl.glUniform2f(media.F.locations['uOrigin'], *U.origin)
             media.gl.glUniform2f(media.F.locations['uZoom'  ], *U.zoom)
             self.points.draw()
+            self.tris.draw()
         media.set_callbacks(
             draw=draw,
         )

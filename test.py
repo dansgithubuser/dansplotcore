@@ -342,5 +342,5 @@ if args.case in ['19', 'volume', 'all', '3d']:
                 g = 1 / (1 + 2 ** (y * z))
                 b = 1 / (1 + 2 ** (z * x))
                 a = 2 ** (1 - (x ** 2 + y ** 2 + z ** 2)) / 2
-                plot.point(x, y, z, r, g, b, a)
+                plot.grid_cube(x, y, z, 5/10, r, g, b, a)
     plot.show()
