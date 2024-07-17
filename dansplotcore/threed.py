@@ -7,6 +7,7 @@ import math
 vert_shader_src = b'''\
 uniform vec2 uOrigin;
 uniform vec2 uZoom;
+uniform vec2 uSlice;
 
 attribute vec3 aPosition;
 attribute vec4 aColor;
@@ -20,7 +21,12 @@ void main() {
         0.0,
         1.0
     );
-    vColor = aColor;
+    float view_distance = aPosition.z;
+    if (uSlice[0] <= view_distance && view_distance <= uSlice[1]) {
+        vColor = aColor;
+    } else {
+        vColor = vec4(aColor.rgb, 0.0);
+    }
 }
 '''
 
@@ -88,9 +94,10 @@ class Plot:
         self.z_max = max(z, self.z_max)
 
     def show(self, w=640, h=480):
-        class U:
-            origin = [0, 0]
-            zoom = [1, 1]
+        class U: pass
+        class State:
+            shift = False
+            ctrl = False
         media.init(
             w,
             h,
@@ -98,7 +105,7 @@ class Plot:
             program=(
                 vert_shader_src,
                 frag_shader_src,
-                ['uOrigin', 'uZoom'],
+                ['uOrigin', 'uZoom', 'uSlice'],
                 ['aPosition', 'aColor'],
             ),
         )
@@ -118,6 +125,7 @@ class Plot:
                 h = 1
             U.origin = [x + w/2, y + h/2]
             U.zoom = [2/w, 2/h]
+            U.slice = [self.z_min, self.z_max]
         reset()
         # construct
         self.points.prep('static')
@@ -125,13 +133,42 @@ class Plot:
         self.tris.prep('static')
         self.tris.draws = [('triangles', 0, len(self.tris))]
         # callbacks
+        def key_press(key):
+            if key in ['LShift', 'RShift']:
+                State.shift = True
+            elif key in ['LCtrl', 'RCtrl']:
+                State.ctrl = True
+        def key_release(key):
+            if key in ['LShift', 'RShift']:
+                State.shift = False
+            elif key in ['LCtrl', 'RCtrl']:
+                State.ctrl = False
+        def mouse_scroll(x, y, delta):
+            if State.shift and not State.ctrl:
+                d = U.slice[1] - U.slice[0]
+                if delta > 0: d *= -1
+                U.slice[0] += d / 4
+                U.slice[1] += d / 4
+            elif State.shift and State.ctrl:
+                m = sum(U.slice) / 2
+                d = U.slice[1] - m
+                if delta < 0:
+                    d *= 1.25
+                else:
+                    d *= 0.8
+                U.slice[0] = m - d
+                U.slice[1] = m + d
         def draw():
             media.clear()
             media.gl.glUniform2f(media.F.locations['uOrigin'], *U.origin)
             media.gl.glUniform2f(media.F.locations['uZoom'  ], *U.zoom)
+            media.gl.glUniform2f(media.F.locations['uSlice' ], *U.slice)
             self.points.draw()
             self.tris.draw()
         media.set_callbacks(
+            mouse_scroll=mouse_scroll,
+            key_press=key_press,
+            key_release=key_release,
             draw=draw,
         )
         # run

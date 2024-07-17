@@ -192,6 +192,7 @@ def set_callbacks(
     mouse_drag_right=None,
     mouse_scroll=None,
     key_press=None,
+    key_release=None,
     draw=None,
     resize=None,
 ):
@@ -234,8 +235,32 @@ def set_callbacks(
                     pyglet.window.key.DOWN  : 'Down',
                     pyglet.window.key.SPACE : 'Space',
                     pyglet.window.key.RETURN: 'Return',
+                    pyglet.window.key.LSHIFT: 'LShift',
+                    pyglet.window.key.RSHIFT: 'RShift',
+                    pyglet.window.key.LCTRL : 'LCtrl',
+                    pyglet.window.key.RCTRL : 'RCtrl',
                 }.get(symbol)
             if key: key_press(key)
+
+    @F.window.event
+    def on_key_release(symbol, modifiers):
+        if key_release:
+            if 32 <= symbol < 127:
+                key = chr(symbol)
+            else:
+                key = {
+                    pyglet.window.key.LEFT  : 'Left',
+                    pyglet.window.key.RIGHT : 'Right',
+                    pyglet.window.key.UP    : 'Up',
+                    pyglet.window.key.DOWN  : 'Down',
+                    pyglet.window.key.SPACE : 'Space',
+                    pyglet.window.key.RETURN: 'Return',
+                    pyglet.window.key.LSHIFT: 'LShift',
+                    pyglet.window.key.RSHIFT: 'RShift',
+                    pyglet.window.key.LCTRL : 'LCtrl',
+                    pyglet.window.key.RCTRL : 'RCtrl',
+                }.get(symbol)
+            if key: key_release(key)
 
     @F.window.event
     def on_draw():
