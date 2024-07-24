@@ -332,9 +332,9 @@ if args.case in ['18', 'voxel-basic', 'all', 'voxel']:
 if args.case in ['19', 'volume', 'all', '3d']:
     import dansplotcore.threed as threed
     plot = threed.Plot()
-    for i in range(-100, 100, 5):
-        for j in range(-100, 100, 5):
-            for k in range(-100, 100, 5):
+    for i in range(-100, 101, 5):
+        for j in range(-100, 101, 5):
+            for k in range(-100, 101, 5):
                 x = i / 10
                 y = j / 10
                 z = k / 10

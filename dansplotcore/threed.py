@@ -38,10 +38,23 @@ void main() {
 }
 '''
 
+class View:
+    def __init__(self, x=None, y=None, w=None, h=None):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+    def tuple(self): return [self.x, self.y, self.w, self.h]
+
 class Plot:
     def __init__(
         self,
         title='plot',
+        *,
+        hide_axes=False,
+        x_axis_title=None,
+        y_axis_title=None,
     ):
         self.title = title
         self.points = media.Buffer3d()
@@ -52,6 +65,9 @@ class Plot:
         self.y_max = -math.inf
         self.z_min = +math.inf
         self.z_max = -math.inf
+        self.hide_axes = hide_axes
+        self.x_axis_title = x_axis_title
+        self.y_axis_title = y_axis_title
 
     def point(self, x, y, z, r, g, b, a):
         self.points.add(x, y, z, r, g, b, a)
@@ -98,6 +114,8 @@ class Plot:
         class State:
             shift = False
             ctrl = False
+        view = View()
+        buffer_dyn = media.Buffer3d()
         media.init(
             w,
             h,
@@ -110,21 +128,21 @@ class Plot:
             ),
         )
         def reset():
-            x = self.x_min
-            y = self.y_min
-            w = self.x_max - self.x_min
-            h = self.y_max - self.y_min
-            if x == math.inf:
-                x = 0
-                y = 0
-                w = 1
-                h = 1
-            if w == 0:
-                w = 1
-            if h == 0:
-                h = 1
-            U.origin = [x + w/2, y + h/2]
-            U.zoom = [2/w, 2/h]
+            view.x = self.x_min
+            view.y = self.y_min
+            view.w = self.x_max - self.x_min
+            view.h = self.y_max - self.y_min
+            if view.x == math.inf:
+                view.x = 0
+                view.y = 0
+                view.w = 1
+                view.h = 1
+            if view.w == 0:
+                view.w = 1
+            if view.h == 0:
+                view.h = 1
+            U.origin = [view.x + view.w/2, view.y + view.h/2]
+            U.zoom = [2/view.w, 2/view.h]
             U.slice = [self.z_min, self.z_max]
         reset()
         # construct
@@ -158,11 +176,81 @@ class Plot:
                     d *= 0.8
                 U.slice[0] = m - d
                 U.slice[1] = m + d
+        def draw_axes(texter):
+            text_w = 10 / media.width()  * view.w
+            text_h = 15 / media.height() * view.h
+            margin_x = 5.0 / media.width()  * view.w
+            margin_y = 5.0 / media.height() * view.h
+            # draw x axis
+            increment = 10 ** math.floor(math.log10(view.w))
+            if view.w / increment < 2:
+                increment /= 5
+            elif view.w / increment < 5:
+                increment /= 2
+            i = view.x // increment * increment + increment
+            if self.x_axis_title:
+                x_axis_title_w = text_w * len(self.x_axis_title)
+            else:
+                x_axis_title_w = 0
+            while i < view.x + view.w - (x_axis_title_w + 6 * text_w + margin_x):
+                t = i
+                s = '{:.5}'.format(t)
+                texter.text(s, x=i+margin_x, y=view.y+margin_y, w=text_w, h=text_h)
+                texter.text('L', i, view.y, text_w * 2, text_h)
+                i += increment
+            if self.x_axis_title:
+                texter.text(
+                    self.x_axis_title,
+                    x=view.x + view.w - x_axis_title_w,
+                    y=view.y + margin_y,
+                    w=text_w,
+                    h=text_h,
+                )
+            # draw y axis
+            increment = 10 ** math.floor(math.log10(view.h))
+            if view.h / increment < 2:
+                increment /= 5
+            elif view.h / increment < 5:
+                increment /= 2
+            i = (view.y + text_h + 2*margin_y) // increment * increment + increment
+            if self.y_axis_title:
+                y_axis_title_h = text_h + 2 * margin_y
+            else:
+                y_axis_title_h = 0
+            while i < view.y + view.h - (text_h + 2 * margin_y + y_axis_title_h):
+                t = i
+                s = '{:.5}'.format(t)
+                texter.text(s, x=view.x+margin_x, y=i+margin_y, w=text_w, h=text_h)
+                texter.text('L', view.x, i, text_w * 2, text_h)
+                i += increment
+            if self.y_axis_title:
+                texter.text(
+                    self.y_axis_title,
+                    x=view.x + margin_x,
+                    y=view.y + view.h - text_h - margin_y,
+                    w=text_w,
+                    h=text_h,
+                )
+            # draw z axis
+            texter.text(
+                f'z = ({U.slice[0]:.3f}, {U.slice[1]:.3f})',
+                x=view.x + view.w / 2,
+                y=view.y + view.h - text_h - margin_y,
+                w=text_w,
+                h=text_h,
+            )
         def draw():
             media.clear()
             media.gl.glUniform2f(media.F.locations['uOrigin'], *U.origin)
             media.gl.glUniform2f(media.F.locations['uZoom'  ], *U.zoom)
             media.gl.glUniform2f(media.F.locations['uSlice' ], *U.slice)
+            texter = media.Texter()
+            buffer_dyn.clear()
+            if not self.hide_axes: draw_axes(texter)
+            buffer_dyn.add_data_2d_with_z(texter.data, z=(U.slice[0] + U.slice[1]) / 2)
+            buffer_dyn.prep('dynamic')
+            buffer_dyn.draws = [('lines', 0, len(buffer_dyn.data))]
+            buffer_dyn.draw()
             self.points.draw()
             self.tris.draw()
         media.set_callbacks(

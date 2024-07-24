@@ -124,6 +124,11 @@ class Buffer3d(Buffer):
     def add(self, x, y, z, r, g, b, a):
         self.data.extend([x, y, z, r, g, b, a])
 
+    def add_data_2d_with_z(self, data, z):
+        for i in range(0, len(data), 6):
+            x, y, r, g, b, a = data[i:i+6]
+            self.add(x, y, z, r, g, b, a)
+
     def _attributes(self):
         return [
             ('aPosition', 3),
