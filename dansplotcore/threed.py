@@ -156,6 +156,10 @@ class Plot:
                 State.shift = True
             elif key in ['LCtrl', 'RCtrl']:
                 State.ctrl = True
+            elif key == ' ':
+                reset()
+            elif key == 'Return':
+                media.capture()
         def key_release(key):
             if key in ['LShift', 'RShift']:
                 State.shift = False
