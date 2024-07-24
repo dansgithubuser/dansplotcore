@@ -251,12 +251,12 @@ class Plot:
             texter = media.Texter()
             buffer_dyn.clear()
             if not self.hide_axes: draw_axes(texter)
+            self.points.draw()
+            self.tris.draw()
             buffer_dyn.add_data_2d_with_z(texter.data, z=(U.slice[0] + U.slice[1]) / 2)
             buffer_dyn.prep('dynamic')
             buffer_dyn.draws = [('lines', 0, len(buffer_dyn.data))]
             buffer_dyn.draw()
-            self.points.draw()
-            self.tris.draw()
         media.set_callbacks(
             mouse_scroll=mouse_scroll,
             key_press=key_press,
