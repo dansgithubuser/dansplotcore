@@ -81,13 +81,13 @@ class Plot:
         self.include(xb, yb, zb)
         self.include(xc, yc, zc)
 
-    def grid_cube(self, x, y, z, half_edge, r, g, b, a):
-        xi = x - half_edge / 2
-        yi = y - half_edge / 2
-        zi = z - half_edge / 2
-        xf = x + half_edge / 2
-        yf = y + half_edge / 2
-        zf = z + half_edge / 2
+    def grid_cube(self, x, y, z, edge, r, g, b, a):
+        xi = x - edge / 2
+        yi = y - edge / 2
+        zi = z - edge / 2
+        xf = x + edge / 2
+        yf = y + edge / 2
+        zf = z + edge / 2
         self.triangle(xi, yi, zi, xf, yi, zi, xf, yf, zi, r, g, b, a)
         self.triangle(xi, yi, zi, xi, yf, zi, xf, yf, zi, r, g, b, a)
         self.triangle(xi, yi, zi, xi, yf, zi, xi, yf, zf, r, g, b, a)
@@ -101,6 +101,10 @@ class Plot:
         self.triangle(xf, yf, zf, xi, yf, zf, xi, yf, zi, r, g, b, a)
         self.triangle(xf, yf, zf, xf, yf, zi, xi, yf, zi, r, g, b, a)
 
+    def clear(self):
+        self.points.clear()
+        self.tris.clear()
+
     def include(self, x, y, z):
         self.x_min = min(x, self.x_min)
         self.x_max = max(x, self.x_max)
@@ -109,7 +113,7 @@ class Plot:
         self.z_min = min(z, self.z_min)
         self.z_max = max(z, self.z_max)
 
-    def show(self, w=640, h=480):
+    def show(self, w=640, h=480, *, update=None):
         class U: pass
         class State:
             shift = False
@@ -145,11 +149,13 @@ class Plot:
             U.zoom = [2/view.w, 2/view.h]
             U.slice = [self.z_min, self.z_max]
         reset()
-        # construct
-        self.points.prep('static')
+        # initial construct
         self.points.draws = [('points', 0, len(self.points))]
-        self.tris.prep('static')
         self.tris.draws = [('triangles', 0, len(self.tris))]
+        def construct():
+            self.points.prep('static')
+            self.tris.prep('static')
+        construct()
         # callbacks
         def key_press(key):
             if key in ['LShift', 'RShift']:
@@ -257,11 +263,18 @@ class Plot:
             buffer_dyn.prep('dynamic')
             buffer_dyn.draws = [('lines', 0, len(buffer_dyn.data))]
             buffer_dyn.draw()
+        if update:
+            def wrap_update(dt):
+                update(dt)
+                construct()
+        else:
+            wrap_update = None
         media.set_callbacks(
             mouse_scroll=mouse_scroll,
             key_press=key_press,
             key_release=key_release,
             draw=draw,
+            update=wrap_update,
         )
         # run
         media.run()

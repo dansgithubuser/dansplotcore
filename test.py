@@ -373,3 +373,29 @@ if args.case in ['20', 'animation', 'all']:
     updater = Updater()
     updater(0)
     plot.show(update=updater)
+
+#===== 3d animation =====#
+if args.case in ['21', 'animation-3d', 'all']:
+    print('animating a pulsing cube')
+    import dansplotcore.threed as threed
+    plot = threed.Plot()
+
+    class Updater:
+        def __init__(self):
+            self.phase = 0
+
+        def __call__(self, dt):
+            plot.clear()
+            self.phase += dt * math.tau
+            n = 10
+            for x in range(n):
+                for y in range(n):
+                    for z in range(n):
+                        z -= n/2
+                        d = max([abs(x - n/2), abs(y - n/2), abs(z), 1])
+                        a = (math.sin(self.phase) + 1) / d
+                        plot.grid_cube(x, y, z, 1, 1, 0, 0, a)
+
+    updater = Updater()
+    updater(0)
+    plot.show(update=updater)
