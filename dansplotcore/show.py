@@ -101,7 +101,7 @@ def construct(plot, view, w, h):
         ('points'   ,        0, points_f - 0       ),
     ]
 
-def show(plot, w, h):
+def show(plot, w, h, update):
     media.init(w, h, plot.title)
     translate_dates(plot)
     if plot.x_min == plot.x_max:
@@ -338,6 +338,12 @@ def show(plot, w, h):
         plot.buffer_dyn.prep('dynamic')
         plot.buffer_dyn.draws = [('lines', 0, len(plot.buffer_dyn.data))]
         plot.buffer_dyn.draw()
+    if update:
+        def wrap_update(dt):
+            update(dt)
+            construct(plot, view, media.width(), media.height())
+    else:
+        wrap_update = None
     media.set_callbacks(
         mouse_press_right=on_mouse_press_right,
         mouse_release_right=on_mouse_release_right,
@@ -347,5 +353,6 @@ def show(plot, w, h):
         key_press=on_key_press,
         draw=on_draw,
         resize=on_resize,
+        update=wrap_update,
     )
     media.run()

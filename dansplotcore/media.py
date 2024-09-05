@@ -200,6 +200,7 @@ def set_callbacks(
     key_release=None,
     draw=None,
     resize=None,
+    update=None,
 ):
     @F.window.event
     def on_mouse_press(x, y, button, modifiers):
@@ -280,6 +281,9 @@ def set_callbacks(
     def on_resize(width, height):
         if resize:
             resize(width, height)
+
+    if update:
+        pyglet.clock.schedule_interval(update, 1/60)
 
 def run():
     gl.glEnable(gl.GL_BLEND);

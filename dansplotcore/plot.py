@@ -98,9 +98,18 @@ class Plot:
         self.include(x, y)
         return var
 
-    def show(self, w=640, h=480):
+    def clear(self):
+        self.points.clear()
+        self.lines.clear()
+        self.rects.clear()
+        self.late_vertexors.clear()
+        self.texts.clear()
+        self.texts_static.clear()
+        self.series = 0
+
+    def show(self, w=640, h=480, *, update=None):
         from .show import show
-        show(self, w, h)
+        show(self, w, h, update)
 
     def plot_list(self, l, **kwargs):
         for i, v in enumerate(l):

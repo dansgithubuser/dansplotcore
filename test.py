@@ -355,3 +355,21 @@ if args.case in ['19', 'volume', 'all', '3d']:
                 a = abs(psi)
                 plot.grid_cube(x, y, z, stride/zoom, r, g, b, a)
     plot.show()
+
+#===== animation =====#
+if args.case in ['20', 'animation', 'all']:
+    print('animating a sliding sine wave')
+    plot = dpc.Plot(primitive=dpc.p.Line())
+
+    class Updater:
+        def __init__(self):
+            self.phase = 0
+
+        def __call__(self, dt):
+            plot.clear()
+            self.phase += dt * math.tau
+            plot.plot(lambda x: math.sin(x + self.phase), x=(0, 10))
+
+    updater = Updater()
+    updater(0)
+    plot.show(update=updater)
