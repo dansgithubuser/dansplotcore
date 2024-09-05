@@ -13,6 +13,11 @@ class Point(_Base):
     def __call__(self, x, y, r=255, g=255, b=255, a=255):
         self.plot.point(x, y, r, g, b, a)
 
+class PointComplexY(_Base):
+    def __call__(self, x, y, r=255, g=255, b=255, a=1.0):
+        self.plot.point(x, y.real, r, g, b, a)
+        self.plot.point(x, y.imag, r, g, b, a/2)
+
 class Plus(_Base):
     def __init__(self, size=5):
         self.size = size
@@ -54,6 +59,17 @@ class Line(_Base):
     def reset(self):
         self.x = None
         self.y = None
+
+class LineComplexY(Line):
+    def __call__(self, x, y, r=255, g=255, b=255, a=1.0):
+        if self.x is not None:
+            self.plot.line(self.x, self.y.real, x, y.real, r, g, b, a)
+            self.plot.line(self.x, self.y.imag, x, y.imag, r, g, b, a/2)
+        else:
+            self.plot.point(x, y.real, r, g, b, a)
+            self.plot.point(x, y.imag, r, g, b, a/2)
+        self.x = x
+        self.y = y
 
 class Bar(_Base):
     def __init__(self):

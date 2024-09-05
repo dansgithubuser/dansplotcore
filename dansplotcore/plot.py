@@ -206,6 +206,7 @@ class Plot:
             elif type(args[0]) == dict: plot_func = self.plot_dict
             elif _type_r(args[0]) == _type_r([{}]): plot_func = self.plot_dicts
             elif callable(args[0]): plot_func = self.plot_f
+            elif type(args[0]).__name__ == 'ndarray' and len(args[0].shape) == 1: plot_func = self.plot_list
             elif type(args[0]).__name__ == 'ndarray' and len(args[0].shape) == 2: plot_func = self.plot_2d
         elif len(args) == 2:
             if   _is_dim(args[0], 1) and _is_dim(args[1], 1): plot_func = self.plot_scatter
