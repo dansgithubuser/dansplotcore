@@ -59,6 +59,7 @@ def compile_shader(type_, src):
 #===== file-scope =====#
 class F:
     program = None
+    program_is_default = True
     locations = {}
     window = None
     origin = [0, 0]
@@ -97,14 +98,58 @@ class Buffer:
             getattr(gl, f'GL_{usage.upper()}_DRAW'),
         )
 
-    def draw(self):
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer);
-        gl.glVertexAttribPointer(F.locations['aPosition'], 2, gl.GL_FLOAT, gl.GL_FALSE, 6 * 4, 0 * 4);
-        gl.glVertexAttribPointer(F.locations['aColor'   ], 4, gl.GL_FLOAT, gl.GL_FALSE, 6 * 4, 2 * 4);
+    def draw(self, attributes=None):
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
+        if attributes == None:
+            attributes = self._attributes()
+        stride = sum(components for _, components in attributes)
+        offset = 0
+        for attribute in attributes:
+            attribute, components = attribute
+            gl.glVertexAttribPointer(F.locations[attribute], components, gl.GL_FLOAT, gl.GL_FALSE, stride * 4, offset * 4)
+            offset += components
         for mode, first, count in self.draws:
             gl.glDrawArrays(getattr(gl, f'GL_{mode.upper()}'), first, count)
 
-def init(w, h, title):
+    def _attributes(self):
+        return [
+            ('aPosition', 2),
+            ('aColor', 4),
+        ]
+
+class Buffer3d(Buffer):
+    def __len__(self):
+        return len(self.data) // 7
+
+    def add(self, x, y, z, r, g, b, a):
+        self.data.extend([x, y, z, r, g, b, a])
+
+    def add_data_2d_with_z(self, data, z):
+        for i in range(0, len(data), 6):
+            x, y, r, g, b, a = data[i:i+6]
+            self.add(x, y, z, r, g, b, a)
+
+    def _attributes(self):
+        return [
+            ('aPosition', 3),
+            ('aColor', 4),
+        ]
+
+def init(
+    w,
+    h,
+    title,
+    *,
+    program=None,
+):
+    if program == None:
+        global vert_shader_src
+        global frag_shader_src
+        uniforms = ['uOrigin', 'uZoom']
+        attributes = ['aPosition', 'aColor']
+    else:
+        vert_shader_src, frag_shader_src, uniforms, attributes = program
+        F.program_is_default = False
     # window
     F.window = pyglet.window.Window(
         width=w,
@@ -119,13 +164,13 @@ def init(w, h, title):
     gl.glAttachShader(F.program, compile_shader(gl.GL_FRAGMENT_SHADER, frag_shader_src))
     gl.glLinkProgram(F.program)
     # uniforms
-    F.locations['uOrigin'] = gl.glGetUniformLocation(F.program, b'uOrigin')
-    F.locations['uZoom'  ] = gl.glGetUniformLocation(F.program, b'uZoom')
+    for uniform in uniforms:
+        F.locations[uniform] = gl.glGetUniformLocation(F.program, uniform.encode())
     # attributes
-    F.locations['aPosition'] = gl.glGetAttribLocation(F.program, b'aPosition')
-    F.locations['aColor'   ] = gl.glGetAttribLocation(F.program, b'aColor')
-    gl.glEnableVertexAttribArray(F.locations['aPosition'])
-    gl.glEnableVertexAttribArray(F.locations['aColor'])
+    for attribute in attributes:
+        F.locations[attribute] = gl.glGetAttribLocation(F.program, attribute.encode())
+    for attribute in attributes:
+        gl.glEnableVertexAttribArray(F.locations[attribute])
 
 def view_set(x, y, w, h):
     F.origin = [x + w/2, y + h/2]
@@ -152,6 +197,7 @@ def set_callbacks(
     mouse_drag_right=None,
     mouse_scroll=None,
     key_press=None,
+    key_release=None,
     draw=None,
     resize=None,
 ):
@@ -194,14 +240,39 @@ def set_callbacks(
                     pyglet.window.key.DOWN  : 'Down',
                     pyglet.window.key.SPACE : 'Space',
                     pyglet.window.key.RETURN: 'Return',
+                    pyglet.window.key.LSHIFT: 'LShift',
+                    pyglet.window.key.RSHIFT: 'RShift',
+                    pyglet.window.key.LCTRL : 'LCtrl',
+                    pyglet.window.key.RCTRL : 'RCtrl',
                 }.get(symbol)
             if key: key_press(key)
 
     @F.window.event
+    def on_key_release(symbol, modifiers):
+        if key_release:
+            if 32 <= symbol < 127:
+                key = chr(symbol)
+            else:
+                key = {
+                    pyglet.window.key.LEFT  : 'Left',
+                    pyglet.window.key.RIGHT : 'Right',
+                    pyglet.window.key.UP    : 'Up',
+                    pyglet.window.key.DOWN  : 'Down',
+                    pyglet.window.key.SPACE : 'Space',
+                    pyglet.window.key.RETURN: 'Return',
+                    pyglet.window.key.LSHIFT: 'LShift',
+                    pyglet.window.key.RSHIFT: 'RShift',
+                    pyglet.window.key.LCTRL : 'LCtrl',
+                    pyglet.window.key.RCTRL : 'RCtrl',
+                }.get(symbol)
+            if key: key_release(key)
+
+    @F.window.event
     def on_draw():
         gl.glUseProgram(F.program)
-        gl.glUniform2f(F.locations['uOrigin'], *F.origin)
-        gl.glUniform2f(F.locations['uZoom'  ], *F.zoom)
+        if F.program_is_default:
+            gl.glUniform2f(F.locations['uOrigin'], *F.origin)
+            gl.glUniform2f(F.locations['uZoom'  ], *F.zoom)
         if draw:
             draw()
 

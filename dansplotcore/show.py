@@ -102,7 +102,7 @@ def construct(plot, view, w, h):
     ]
 
 def show(plot, w, h):
-    media.init(w, h, title=plot.title)
+    media.init(w, h, plot.title)
     translate_dates(plot)
     if plot.x_min == plot.x_max:
         plot.x_min -= 1

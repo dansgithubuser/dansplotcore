@@ -302,3 +302,56 @@ if args.case in ['17', 'variables', 'all']:
     print('a =', a())
     print('b =', b())
     print('c =', c())
+
+#===== voxel =====#
+if args.case in ['18', 'voxel-basic', 'all', 'voxel']:
+    import dansplotcore.voxel as voxel
+    plot = voxel.Plot(
+        x_i=-10, x_f=+10, x_size=20,
+        y_i=-10, y_f=+10, y_size=20,
+        z_i=-10, z_f=+10, z_size=20,
+    )
+    for i in range(-10, 10):
+        for j in range(-10, 10):
+            for k in range(-10, 10):
+                x = i
+                y = j
+                z = k
+                r = 1 / (1 + 2 ** (x * y))
+                g = 1 / (1 + 2 ** (y * z))
+                b = 1 / (1 + 2 ** (z * x))
+                a = 2 ** (1 - (x ** 2 + y ** 2 + z ** 2)) / 2
+                r = (x + 10) / 20
+                g = (y + 10) / 20
+                b = (z + 10) / 20
+                a = 1.0
+                plot.voxel(x, y, z, r, g, b, a)
+    plot.show()
+
+#===== 3d =====#
+if args.case in ['19', 'volume', 'all', '3d']:
+    import dansplotcore.threed as threed
+    plot = threed.Plot()
+    stride = 5
+    zoom = 1
+    for i in range(-100, 101, stride):
+        for j in range(-100, 101, stride):
+            for k in range(-100, 101, stride):
+                x = i / zoom
+                y = j / zoom
+                z = k / zoom
+                radius = (x ** 2 + y ** 2 + z ** 2) ** (1/2)
+                theta = math.atan2(y, x)
+                psi_100 = math.exp(-radius)
+                psi_200 = (2 - radius) * math.exp(-radius / 2)
+                psi_210 = radius * math.exp(-radius / 2) * math.cos(theta)
+                psi_300 = (27 - 18 * radius + 2 * radius ** 2) * math.exp(-radius / 3)
+                psi_310 = (6 * radius - radius ** 2) * math.exp(-radius / 3) * math.cos(theta)
+                psi_320 = radius ** 2 * math.exp(-radius / 3) * (3 * math.cos(theta) ** 2 - 1)
+                psi = psi_320
+                r = 1.0 if psi > 0 else 0.0
+                g = 0.0
+                b = 1.0 if psi < 0 else 0.0
+                a = abs(psi)
+                plot.grid_cube(x, y, z, stride/zoom, r, g, b, a)
+    plot.show()
