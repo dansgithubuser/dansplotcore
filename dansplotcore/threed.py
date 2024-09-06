@@ -263,18 +263,17 @@ class Plot:
             buffer_dyn.prep('dynamic')
             buffer_dyn.draws = [('lines', 0, len(buffer_dyn.data))]
             buffer_dyn.draw()
+        media.set_callbacks(
+            mouse_scroll=mouse_scroll,
+            key_press=key_press,
+            key_release=key_release,
+            draw=draw,
+        )
         if update:
             def wrap_update(dt):
                 update(dt)
                 construct()
         else:
             wrap_update = None
-        media.set_callbacks(
-            mouse_scroll=mouse_scroll,
-            key_press=key_press,
-            key_release=key_release,
-            draw=draw,
-            update=wrap_update,
-        )
         # run
-        media.run()
+        media.run(update=wrap_update)

@@ -338,12 +338,6 @@ def show(plot, w, h, update):
         plot.buffer_dyn.prep('dynamic')
         plot.buffer_dyn.draws = [('lines', 0, len(plot.buffer_dyn.data))]
         plot.buffer_dyn.draw()
-    if update:
-        def wrap_update(dt):
-            update(dt)
-            construct(plot, view, media.width(), media.height())
-    else:
-        wrap_update = None
     media.set_callbacks(
         mouse_press_right=on_mouse_press_right,
         mouse_release_right=on_mouse_release_right,
@@ -353,6 +347,11 @@ def show(plot, w, h, update):
         key_press=on_key_press,
         draw=on_draw,
         resize=on_resize,
-        update=wrap_update,
     )
-    media.run()
+    if update:
+        def wrap_update(dt):
+            update(dt)
+            construct(plot, view, media.width(), media.height())
+    else:
+        wrap_update = None
+    media.run(update=wrap_update)

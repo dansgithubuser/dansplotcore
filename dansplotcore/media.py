@@ -147,6 +147,7 @@ def init(
         global frag_shader_src
         uniforms = ['uOrigin', 'uZoom']
         attributes = ['aPosition', 'aColor']
+        F.program_is_default = True
     else:
         vert_shader_src, frag_shader_src, uniforms, attributes = program
         F.program_is_default = False
@@ -200,7 +201,6 @@ def set_callbacks(
     key_release=None,
     draw=None,
     resize=None,
-    update=None,
 ):
     @F.window.event
     def on_mouse_press(x, y, button, modifiers):
@@ -282,10 +282,11 @@ def set_callbacks(
         if resize:
             resize(width, height)
 
-    if update:
-        pyglet.clock.schedule_interval(update, 1/60)
-
-def run():
+def run(update=None):
     gl.glEnable(gl.GL_BLEND);
     gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
+    if update:
+        pyglet.clock.schedule_interval(update, 1/60)
     pyglet.app.run()
+    if update:
+        pyglet.clock.unschedule(update)

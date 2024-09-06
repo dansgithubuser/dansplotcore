@@ -305,6 +305,7 @@ if args.case in ['17', 'variables', 'all']:
 
 #===== voxel =====#
 if args.case in ['18', 'voxel-basic', 'all', 'voxel']:
+    print('voxel plot')
     import dansplotcore.voxel as voxel
     plot = voxel.Plot(
         x_i=-10, x_f=+10, x_size=20,
@@ -330,6 +331,7 @@ if args.case in ['18', 'voxel-basic', 'all', 'voxel']:
 
 #===== 3d =====#
 if args.case in ['19', 'volume', 'all', '3d']:
+    print('3d plot of spherical harmonic')
     import dansplotcore.threed as threed
     plot = threed.Plot()
     stride = 5
