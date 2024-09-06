@@ -172,6 +172,7 @@ class Plot:
                 if 'r' in a: rect['r'] = a['r']
                 if 'g' in a: rect['g'] = a['g']
                 if 'b' in a: rect['b'] = a['b']
+                if 'a' in a: rect['a'] *= a['a']
                 b = self.transform(self._increment(x, x_increment), self._increment(y, y_increment), i, self.series)
                 rect['xf'] = b['x']
                 rect['yf'] = b['y']
