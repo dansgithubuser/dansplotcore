@@ -1,11 +1,9 @@
 class Color:
-    def __init__(self, r, g, b):
+    def __init__(self, r, g, b, a=1.0):
         self.r = r
         self.g = g
         self.b = b
-
-    def tuple(self):
-        return self.r, self.g, self.b
+        self.a = a
 
     def mix(self, other, amount):
         return Color(
@@ -42,8 +40,8 @@ Color.all = [
     Color(128,  64,   0),
 ]
 
-class Default:
-    def __init__(self, colors=Color.all):
+class Colors:
+    def __init__(self, colors):
         if type(colors) == str:
             colors = [getattr(Color, i) for i in colors]
         self.colors = colors
@@ -52,8 +50,12 @@ class Default:
         color = self.colors[series % len(self.colors)]
         return {
             'x': x, 'y': y,
-            'r': color.r, 'g': color.g, 'b': color.b,
+            'r': color.r, 'g': color.g, 'b': color.b, 'a': color.a,
         }
+
+class Default(Colors):
+    def __init__(self):
+        Colors.__init__(self, Color.all)
 
 class Grid:
     def __init__(self, cell_w, cell_h, grid_w):

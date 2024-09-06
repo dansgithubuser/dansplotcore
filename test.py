@@ -176,7 +176,7 @@ if args.case in ['7', 'scatter-line', 'all']:
             (5, 8),
             (6, 13),
         ],
-        transform=dpc.transforms.Default(colors=[dpc.transforms.Color(128, 128, 128)]),
+        transform=dpc.transforms.Colors([dpc.transforms.Color(128, 128, 128)]),
         primitive=dpc.primitives.Line(),
     )
 
