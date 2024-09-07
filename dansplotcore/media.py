@@ -86,15 +86,23 @@ class Buffer:
     def add_data(self, data):
         self.data.extend(data)
 
+    def recolor(self, i, n, r, g, b, a):
+        for _ in range(n):
+            self.data[6*i+2:6*i+6] = [r, g, b, a]
+            i += 1
+        return i
+
     def clear(self):
-        self.data.clear()
+        self.data = []
 
     def prep(self, usage):
+        if type(self.data) == list:
+            self.data = (gl.GLfloat * len(self.data))(*self.data)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
         gl.glBufferData(
             gl.GL_ARRAY_BUFFER,
             len(self.data)*4,
-            (gl.GLfloat * len(self.data))(*self.data),
+            self.data,
             getattr(gl, f'GL_{usage.upper()}_DRAW'),
         )
 

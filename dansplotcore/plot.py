@@ -107,9 +107,22 @@ class Plot:
         self.texts_static.clear()
         self.series = 0
 
-    def show(self, w=640, h=480, *, update=None):
+    def show(
+        self,
+        w=640,
+        h=480,
+        *,
+        update=None,
+        update_reconstruct=True,
+    ):
         from .show import show
-        show(self, w, h, update)
+        show(
+            self,
+            w,
+            h,
+            update,
+            update_reconstruct,
+        )
 
     def plot_list(self, l, **kwargs):
         for i, v in enumerate(l):

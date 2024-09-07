@@ -101,7 +101,7 @@ def construct(plot, view, w, h):
         ('points'   ,        0, points_f - 0       ),
     ]
 
-def show(plot, w, h, update):
+def show(plot, w, h, update, update_reconstruct):
     media.init(w, h, plot.title)
     translate_dates(plot)
     if plot.x_min == plot.x_max:
@@ -351,7 +351,8 @@ def show(plot, w, h, update):
     if update:
         def wrap_update(dt):
             update(dt)
-            construct(plot, view, media.width(), media.height())
+            if update_reconstruct:
+                construct(plot, view, media.width(), media.height())
     else:
         wrap_update = None
     media.run(update=wrap_update)
