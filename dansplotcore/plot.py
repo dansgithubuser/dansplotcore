@@ -155,13 +155,14 @@ class Plot:
         self._plot_common(**kwargs)
 
     def plot_2d(self, array, *, x_increment=1, y_increment=1, **kwargs):
+        'plot a 2d array as a heatmap'
         z_min = math.inf
         z_max = -math.inf
         for row in array:
             z_min = min(z_min, min(row))
             z_max = max(z_max, max(row))
         z_rng = z_max - z_min
-        if z_rng == 0: return
+        if z_rng == 0: z_rng = 1
         i = 0
         for y, row in enumerate(array):
             for x, z in enumerate(row):
@@ -180,13 +181,14 @@ class Plot:
         self._plot_common(**kwargs)
 
     def plot_heatmap(self, triples, *, x_increment=1, y_increment=1, **kwargs):
+        'plot an array of triplets as a heatmap'
         z_min = math.inf
         z_max = -math.inf
         zs = [i[2] for i in triples]
         z_min = min(zs)
         z_max = max(zs)
         z_rng = z_max - z_min
-        if z_rng == 0: return
+        if z_rng == 0: z_rng = 1
         i = 0
         for x, y, z in triples:
             rect = {'a': float((z - z_min) / z_rng)}
