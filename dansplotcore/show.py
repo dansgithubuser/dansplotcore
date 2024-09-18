@@ -15,7 +15,7 @@ class View:
 
 def fcolor(r, g, b, a):
     return [
-        i if type(i) == float else i/255
+        i/255 if type(i) == int else i
         for i in [r, g, b, a]
     ]
 
