@@ -247,7 +247,7 @@ if args.case in ['13', 'static-text', 'all']:
     plot = dpc.Plot()
     for i in range(300):
         plot.text_static(
-            str(random.randint(0, 1e22)),
+            str(random.randint(0, int(1e22))),
             (i % 5) * 30,
             (i // 5) * 1.5,
         )
